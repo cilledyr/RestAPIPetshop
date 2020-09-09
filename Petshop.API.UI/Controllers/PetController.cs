@@ -21,12 +21,12 @@ namespace Petshop.RestAPI.UI.Controllers
             _ownerService = ownerService;
         }
    
-        private static readonly string[] Summaries = new[]
+        /*private static readonly string[] Summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        /*private readonly ILogger<PetController> _logger;
+        private readonly ILogger<PetController> _logger;
 
         public PetController(ILogger<PetController> logger)
         {
@@ -78,9 +78,10 @@ namespace Petshop.RestAPI.UI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public string Delete(int id)
         {
             _petService.DeletePetByID(id);
+            return "Pet deleted";
         }
     }
 }
