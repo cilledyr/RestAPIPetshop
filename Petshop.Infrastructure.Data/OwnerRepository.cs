@@ -44,7 +44,7 @@ namespace Petshop.Infrastructure.Data
             List<Owner> foundOwners = (PetDB.allTheOwners.Where(owner => owner.OwnerId == searchId)).ToList();
             if (foundOwners.Count <= 0 || foundOwners.Count > 1)
             {
-                throw new Exception(message: "I am sorry wrong amonut of pets found by ID.");
+                return null;
             }
             else
             {
