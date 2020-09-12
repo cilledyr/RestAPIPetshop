@@ -105,6 +105,10 @@ namespace Petshop.Infrastructure.Data
 
         internal static Owner addNewOwner(Owner theNewOwner)
         {
+            if(theOwnerCount == 0)
+            {
+                theOwnerCount++;
+            }
             theNewOwner.OwnerId = theOwnerCount;
             theOwnerCount++;
             List<Owner> newOwner = new List<Owner> { theNewOwner };
@@ -258,6 +262,10 @@ namespace Petshop.Infrastructure.Data
 
         internal static Pet AddNewPet(Pet theNewPet)
         {
+            if(thePetCount == 0)
+            {
+                thePetCount++;
+            }
             theNewPet.PetId = thePetCount;
             thePetCount++;
             List<Pet> newPet = new List<Pet> { theNewPet };

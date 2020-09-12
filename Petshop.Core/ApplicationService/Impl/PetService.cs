@@ -12,15 +12,17 @@ namespace Petshop.Core.ApplicationService.Impl
     {
 
         private IPetRepository _petRepo;
+        private IOwnerRepository _ownerRepo;
 
         public PetService(IPetRepository petRepository, IOwnerRepository ownerRepository)
         {
             _petRepo = petRepository;
+            _ownerRepo = ownerRepository;
         }
 
 
 
-        public Pet AddNewPet(string thePetName, int theSelectedSpecies, string theColour, DateTime theSelectedBirthday, DateTime theSelectedPurchaseDate, string thePreviousOwner, long thePetPrice, Owner theOwner)
+        public Pet AddNewPet(string thePetName, int theSelectedSpecies, string theColour, DateTime theSelectedBirthday, DateTime theSelectedPurchaseDate, string thePreviousOwner, double thePetPrice, int theOwnerId)
         {
             Pet theNewPet = new Pet();
             theNewPet.PetName = thePetName;
@@ -56,7 +58,7 @@ namespace Petshop.Core.ApplicationService.Impl
             theNewPet.PetSoldDate = theSelectedPurchaseDate;
             theNewPet.PetPreviousOwner = thePreviousOwner;
             theNewPet.PetPrice = thePetPrice;
-            theNewPet.PetOwner = theOwner;
+            theNewPet.PetOwner = _ownerRepo.FindOwner(theOwnerId);
 
             return  _petRepo.AddNewPet(theNewPet);
 

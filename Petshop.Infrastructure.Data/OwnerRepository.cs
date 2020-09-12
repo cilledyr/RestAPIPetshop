@@ -104,5 +104,18 @@ namespace Petshop.Infrastructure.Data
             List<Pet> OwnerPets = PetDB.allThePets.Where(pet => pet.PetOwner == theOwner).ToList();
             return OwnerPets;
         }
+
+        public Owner FindOwner(int theOwnerId)
+        {
+            List<Owner> foundOwners = (PetDB.allTheOwners.Where(owner => owner.OwnerId == theOwnerId)).ToList();
+            if (foundOwners.Count <= 0 || foundOwners.Count > 1)
+            {
+                return null;
+            }
+            else
+            {
+                return foundOwners[0];
+            }
+        }
     }
 }

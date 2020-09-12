@@ -21,5 +21,7 @@ namespace Petshop.Core.DomainService
         public List<Pet> FindAllPetsByOwner(Owner theOwner);
         public IEnumerable<Owner> GetAllOwners();
         public Owner AddNewOwner(Owner theNewOwner);
+
+        public Owner FindOwner(int theOwnerId);
     }
 }
