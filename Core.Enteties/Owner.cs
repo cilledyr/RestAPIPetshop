@@ -12,6 +12,7 @@ namespace Petshop.Core.Enteties
         public string OwnerAddress { get; set; }
         public string  OwnerPhoneNr { get; set; }
         public string OwnerEmail { get; set; }
+        public List<Pet> OwnerPets { get; set; }
 
         public Owner ()
         {

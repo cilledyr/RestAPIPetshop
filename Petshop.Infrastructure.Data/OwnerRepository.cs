@@ -48,7 +48,19 @@ namespace Petshop.Infrastructure.Data
             }
             else
             {
-                return foundOwners[0];
+                Owner theOwner = PetDB.allTheOwners.Select(o => new Owner()
+                {
+                    OwnerId = o.OwnerId,
+                    OwnerFirstName = o.OwnerFirstName,
+                    OwnerLastName = o.OwnerLastName,
+                    OwnerAddress = o.OwnerAddress,
+                    OwnerPhoneNr = o.OwnerPhoneNr,
+                    OwnerEmail = o.OwnerEmail,
+                    OwnerPets = FindAllPetsByOwner(o)
+                    
+                }).FirstOrDefault(o => o.OwnerId == searchId);
+                
+                return theOwner;
             }
         }
 
@@ -87,10 +99,10 @@ namespace Petshop.Infrastructure.Data
             return PetDB.DeleteOwnerById(theId);
         }
 
-        public IEnumerable<Pet> FindAllPetsByOwner(Owner theOwner)
+        public List<Pet> FindAllPetsByOwner(Owner theOwner)
         {
-            IEnumerable<Pet> petsByOwner = PetDB.allThePets.Where(pet => pet.PetOwner == theOwner);
-            return petsByOwner;
+            List<Pet> OwnerPets = PetDB.allThePets.Where(pet => pet.PetOwner == theOwner).ToList();
+            return OwnerPets;
         }
     }
 }

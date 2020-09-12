@@ -32,7 +32,7 @@ namespace Petshop.Core.ApplicationService.Impl
         }
         public List<Pet> FindAllPetsByOwner(Owner theOwner)
         {
-            return _ownerRepo.FindAllPetsByOwner(theOwner).ToList();
+            return _ownerRepo.FindAllPetsByOwner(theOwner);
         }
 
         public Owner FindOwnerByID(int theId)

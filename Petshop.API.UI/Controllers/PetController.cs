@@ -48,34 +48,34 @@ namespace Petshop.RestAPI.UI.Controllers
         public class newPetObj
         {
             public string petName { get; set; }
-            public int petSpecies { get; set; }
+            public int? petSpecies { get; set; }
             public string petColor { get; set; }
             public DateTime petBirthday { get; set; }
             public DateTime petSoldDate { get; set; }
             public string petPreviousOwner { get; set; }
-            public long petPrice { get; set; }
-            public int ownerId { get; set; }
+            public long? petPrice { get; set; }
+            public int? ownerId { get; set; }
         }
 
         [HttpPost]
         public ActionResult<Pet> Post([FromBody] newPetObj theObject)
         {
-            if (string.IsNullOrEmpty(theObject.petName) || string.IsNullOrEmpty(theObject.petSpecies) || string.IsNullOrEmpty(theObject.petColor) || theObject.petBirthday == null || theObject.petSoldDate == null || string.IsNullOrEmpty(theObject.petPreviousOwner) || theObject.petPrice == null || theObject.ownerId == null)
+            if (string.IsNullOrEmpty(theObject.petName) || !theObject.petSpecies.HasValue || string.IsNullOrEmpty(theObject.petColor) || theObject.petBirthday == null || theObject.petSoldDate == null || string.IsNullOrEmpty(theObject.petPreviousOwner) || theObject.petPrice == null || theObject.ownerId == null)
             {
                 return BadRequest("You have not entered all the required data");
             }
-            Owner newOwner = _ownerService.FindOwnerByID(theObject.ownerId);
+            Owner newOwner = _ownerService.FindOwnerByID(theObject.ownerId.Value);
             if(newOwner == null)
             {
                 return NotFound("I could not find an owner with that Id");
             }
             
-            return Ok(_petService.AddNewPet(theObject.petName, theObject.petSpecies, theObject.petColor, theObject.petBirthday, theObject.petSoldDate, theObject.petPreviousOwner, theObject.petPrice, newOwner));
+            return Ok(_petService.AddNewPet(theObject.petName, theObject.petSpecies.Value, theObject.petColor, theObject.petBirthday, theObject.petSoldDate, theObject.petPreviousOwner, theObject.petPrice.Value, newOwner));
         }
 
         public class updatePetObj
         {
-            public  int updateParam { get; set; }
+            public  int? updateParam { get; set; }
             public string updateData { get; set; }
         }
 
@@ -88,7 +88,7 @@ namespace Petshop.RestAPI.UI.Controllers
             }
             Pet thePet = _petService.FindPetByID(id);
 
-            return Ok(_petService.UpdatePet(thePet, thePetObj.updateParam, thePetObj.updateData));
+            return Ok(_petService.UpdatePet(thePet, thePetObj.updateParam.Value, thePetObj.updateData));
         }
 
         [HttpDelete("{id}")]
