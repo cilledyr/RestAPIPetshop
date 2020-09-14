@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -20,18 +21,7 @@ namespace Petshop.RestAPI.UI.Controllers
             _petService = petService;
             _ownerService = ownerService;
         }
-   
-        /*private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
 
-        private readonly ILogger<PetController> _logger;
-
-        public PetController(ILogger<PetController> logger)
-        {
-            _logger = logger;
-        }*/
 
         [HttpGet]
         public IEnumerable<Pet> Get()
@@ -41,37 +31,17 @@ namespace Petshop.RestAPI.UI.Controllers
 
         [HttpGet("{petId}")]
         public ActionResult<Pet> Get(int petId)
-        {
-            return _petService.FindPetByID(petId);
-        }
-
-        /*public class newPetObj
-        {
-            public string petName { get; set; }
-            public int? petSpecies { get; set; }
-            public string petColor { get; set; }
-            public DateTime petBirthday { get; set; }
-            public DateTime petSoldDate { get; set; }
-            public string petPreviousOwner { get; set; }
-            public long? petPrice { get; set; }
-            public int? ownerId { get; set; }
-        }
-
-        [HttpPost]
-        public ActionResult<Pet> Post([FromBody] newPetObj theObject)
-        {
-            if (string.IsNullOrEmpty(theObject.petName) || !theObject.petSpecies.HasValue || string.IsNullOrEmpty(theObject.petColor) || theObject.petBirthday == null || theObject.petSoldDate == null || string.IsNullOrEmpty(theObject.petPreviousOwner) || theObject.petPrice == null || theObject.ownerId == null)
+        { 
+            try
             {
-                return BadRequest("You have not entered all the required data");
+                return _petService.FindPetByID(petId);
             }
-            Owner newOwner = _ownerService.FindOwnerByID(theObject.ownerId.Value);
-            if(newOwner == null)
+            catch(Exception e)
             {
-                return NotFound("I could not find an owner with that Id");
+                return NotFound(e.Message);
             }
             
-            return Ok(_petService.AddNewPet(theObject.petName, theObject.petSpecies.Value, theObject.petColor, theObject.petBirthday, theObject.petSoldDate, theObject.petPreviousOwner, theObject.petPrice.Value, newOwner));
-        }*/
+        }
 
         [HttpPost]
         public ActionResult<Pet> Post([FromBody] Pet thePet)
@@ -115,22 +85,65 @@ namespace Petshop.RestAPI.UI.Controllers
             {
                 return BadRequest("You have not entered all the correct data.");
             }
-            Pet thePet = _petService.FindPetByID(id);
+            try
+            {
+                Pet thePet = _petService.FindPetByID(id);
+                try
+                {
+                    return Ok(_petService.UpdatePet(thePet, thePetObj.updateParam.Value, thePetObj.updateData));
+                }
+                catch (InvalidDataException e)
+                {
+                    return BadRequest(e.Message);
+                }
+            }
+            catch(Exception e)
+            {
+                return NotFound(e.Message);
+            }
 
-            return Ok(_petService.UpdatePet(thePet, thePetObj.updateParam.Value, thePetObj.updateData));
+            
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult<Pet> Put(int id, [FromBody] Pet theUpdatedPet)
+        {
+            if(theUpdatedPet.PetId != id)
+            {
+                return BadRequest("The id's of the Pet must match.");
+            }
+            if (string.IsNullOrEmpty(theUpdatedPet.PetName) || string.IsNullOrEmpty(theUpdatedPet.PetSpecies.ToString()) || string.IsNullOrEmpty(theUpdatedPet.PetColor) || theUpdatedPet.PetBirthday == null || theUpdatedPet.PetSoldDate == null || string.IsNullOrEmpty(theUpdatedPet.PetPreviousOwner) || theUpdatedPet.PetOwner == null)
+            {
+                return BadRequest("You have not entered all the required Pet data");
+            }
+
+            try
+            {
+                _petService.FindPetByID(id);
+                return Ok(_petService.UpdatePet(theUpdatedPet));
+            }
+            catch(Exception e)
+            {
+                return NotFound(e);
+            }
+            
+           
         }
 
         [HttpDelete("{id}")]
         public ActionResult<string> Delete(int id)
         {
-            Pet PetToDelete = _petService.FindPetByID(id);
-            if(PetToDelete == null)
+            try
             {
-                return NotFound("I could not find a pet with that Id to delete.");
+                Pet PetToDelete = _petService.FindPetByID(id);
+                _petService.DeletePetByID(id);
+                return Ok(PetToDelete.PetName + " pet has been deleted.");
+            }
+            catch(Exception e)
+            {
+                return NotFound(e.Message);
             }
 
-            _petService.DeletePetByID(id);
-            return Ok(PetToDelete.PetName + " pet has been deleted.");
         }
     }
 }

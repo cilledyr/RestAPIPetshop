@@ -260,6 +260,12 @@ namespace Petshop.Infrastructure.Data
             }
         }
 
+        internal static Pet UpdateFullPet(Pet theOldPet, Pet theNewPet)
+        {
+            theOldPet = theNewPet;
+            return theOldPet;
+        }
+
         internal static Pet AddNewPet(Pet theNewPet)
         {
             if(thePetCount == 0)

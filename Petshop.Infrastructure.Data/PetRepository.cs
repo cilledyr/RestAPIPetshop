@@ -32,17 +32,10 @@ namespace Petshop.Infrastructure.Data
             return petsByName;
         }
 
-        public Pet FindPetByID(int theId)
+        public List<Pet> FindPetByID(int theId)
         {
-            List<Pet> foundPets = (PetDB.allThePets.Where(pet => pet.PetId == theId)).ToList();
-            if (foundPets.Count <= 0 || foundPets.Count > 1)
-            {
-                throw new Exception(message: "I am sorry wrong amonut of pets found by ID.");
-            }
-            else
-            {
-                return foundPets[0];
-            }
+            return (PetDB.allThePets.Where(pet => pet.PetId == theId)).ToList();
+            
         }
 
         public Pet UpdateNameOfPet(Pet updatedPet, string updateValue)
@@ -78,6 +71,11 @@ namespace Petshop.Infrastructure.Data
         public Pet UpdatePriceOfPet(Pet updatedPet, long updateValue)
         {
             return PetDB.UpdatePriceOfPet(updatedPet, updateValue);
+        }
+
+        public Pet UpdateFullPet(Pet theOldPet, Pet theNewPet)
+        {
+            return PetDB.UpdateFullPet(theOldPet, theNewPet);
         }
 
         public IEnumerable<Pet> GetSortedPets()

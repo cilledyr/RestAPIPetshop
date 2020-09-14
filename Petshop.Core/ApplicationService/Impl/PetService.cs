@@ -76,7 +76,16 @@ namespace Petshop.Core.ApplicationService.Impl
 
         public Pet FindPetByID(int theNewId)
         {
-            return _petRepo.FindPetByID(theNewId);
+            List<Pet> thePets = _petRepo.FindPetByID(theNewId);
+            if (thePets.Count <= 0 || thePets.Count > 1)
+            {
+                throw new Exception(message: "I am sorry wrong amonut of pets found by ID.");
+            }
+            else
+            {
+                return thePets[0];
+
+            }
         }
 
         public List<Pet> FindPetsByName(string theName)
@@ -177,7 +186,7 @@ namespace Petshop.Core.ApplicationService.Impl
                     int searchId;
                     if(int.TryParse(searchValue, out searchId))
                     {
-                        return new List<Pet> { _petRepo.FindPetByID(searchId) };
+                        return _petRepo.FindPetByID(searchId);
                     }
                     else
                     {
@@ -279,6 +288,19 @@ namespace Petshop.Core.ApplicationService.Impl
                     }
                 default:
                     throw new InvalidDataException(message: "Something unexpected went wrong.");
+            }
+        }
+
+        public Pet UpdatePet(Pet thePet)
+        {
+            List<Pet> thePets = _petRepo.FindPetByID(thePet.PetId);
+            if (thePets.Count <= 0 || thePets.Count > 1)
+            {
+                throw new Exception(message: "I am sorry wrong amonut of pets found by ID.");
+            }
+            else
+            {
+                return _petRepo.UpdateFullPet(thePets[0], thePet);
             }
         }
     }
