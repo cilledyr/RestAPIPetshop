@@ -78,7 +78,8 @@ namespace Petshop.RestAPI.UI.Controllers
             public string updateData { get; set; }
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}/param")]
+        [ActionName("UpdatePetParam")]
         public ActionResult<Pet> Put(int id, [FromBody] updatePetObj thePetObj)
         {
             if(thePetObj.updateParam == null || string.IsNullOrEmpty(thePetObj.updateData))
@@ -105,7 +106,9 @@ namespace Petshop.RestAPI.UI.Controllers
             
         }
 
+       
         [HttpPut("{id}")]
+        [ActionName("UpdateFullPet")]
         public ActionResult<Pet> Put(int id, [FromBody] Pet theUpdatedPet)
         {
             if(theUpdatedPet.PetId != id)

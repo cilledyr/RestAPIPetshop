@@ -33,27 +33,25 @@ namespace Petshop.RestAPI.UI.Controllers
         [HttpGet("{id}")]
         public ActionResult<Owner> Get(int id)
         {
-            return _ownerService.FindOwnerByID(id);
+            try
+            {
+                return Ok(_ownerService.FindOwnerByID(id));
+            }
+            catch(Exception e)
+            {
+                return NotFound(e.Message);
+            }
         }
 
-        public class NewOwnerObject 
-        {
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public string Address { get; set; }
-            public string PhoneNr { get; set; }
-            public string Email { get; set; }
-
-        }
-        // POST api/<OwnerController>
+         // POST api/<OwnerController>
         [HttpPost]
-        public ActionResult<Owner> Post([FromBody] NewOwnerObject theOwner)
+        public ActionResult<Owner> Post([FromBody] Owner theOwner)
         {
-            if(string.IsNullOrEmpty(theOwner.FirstName) || string.IsNullOrEmpty(theOwner.LastName) || string.IsNullOrEmpty(theOwner.Address) || string.IsNullOrEmpty(theOwner.PhoneNr) || string.IsNullOrEmpty(theOwner.Email))
+            if(string.IsNullOrEmpty(theOwner.OwnerFirstName) || string.IsNullOrEmpty(theOwner.OwnerLastName) || string.IsNullOrEmpty(theOwner.OwnerAddress) || string.IsNullOrEmpty(theOwner.OwnerPhoneNr) || string.IsNullOrEmpty(theOwner.OwnerEmail))
             {
                 return BadRequest("You have not entered all the needed data.");
             }
-            return _ownerService.AddNewOwner(theOwner.FirstName, theOwner.LastName, theOwner.Address, theOwner.PhoneNr, theOwner.Email);
+            return _ownerService.AddNewOwner(theOwner.OwnerFirstName, theOwner.OwnerLastName, theOwner.OwnerAddress, theOwner.OwnerPhoneNr, theOwner.OwnerEmail);
         }
 
         public class updateOwnerObj
@@ -61,36 +59,55 @@ namespace Petshop.RestAPI.UI.Controllers
             public int? updateParam { get; set; }
             public string updateData { get; set; }
         }
-
         // PUT api/<OwnerController>/5
         [HttpPut("{id}")]
+        public ActionResult<Owner> Put(int id, [FromBody] Owner theOwner)
+        { 
+            if(id != theOwner.OwnerId)
+            {
+                return BadRequest("Your Id's need to match.");
+            }
+            if (string.IsNullOrEmpty(theOwner.OwnerFirstName) || string.IsNullOrEmpty(theOwner.OwnerLastName) || string.IsNullOrEmpty(theOwner.OwnerAddress) || string.IsNullOrEmpty(theOwner.OwnerPhoneNr) || string.IsNullOrEmpty(theOwner.OwnerEmail))
+            {
+                return BadRequest("You have not entered all the needed data.");
+            }
+            try
+            {
+                return Ok(_ownerService.UpdateOwner(theOwner));
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+        // PUT api/<OwnerController>/5/param
+        [HttpPut("{id}/param")]
         public ActionResult<Owner> Put(int id, [FromBody] updateOwnerObj theOwnerObj)
         {
-            Owner theOwner = _ownerService.FindOwnerByID(id);
-            if (theOwner == null)
+            try
             {
-                return NotFound("Could not find that owner to update.");
+                return _ownerService.UpdateOwner(id, theOwnerObj.updateParam.Value, theOwnerObj.updateData);
             }
-
-            if (theOwnerObj.updateParam == null || string.IsNullOrEmpty(theOwnerObj.updateData))
+            catch(Exception e)
             {
-                return BadRequest("You have not entered the necessary data.");
+                return BadRequest(e.Message);
             }
-            
-            return _ownerService.UpdateOwner(theOwner, theOwnerObj.updateParam.Value, theOwnerObj.updateData);
         }
 
         // DELETE api/<OwnerController>/5
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
-            Owner toDelete = _ownerService.FindOwnerByID(id);
-            if(toDelete == null)
+            try
             {
-                return NotFound("Sorry could not find that owner to delete.");
+                _ownerService.FindOwnerByID(id);
+                _ownerService.DeleteOwnerByID(id);
+                return Ok($"Owner with Id {id} deleted.");
             }
-            _ownerService.DeleteOwnerByID(id);
-            return Ok($"Owner with Id {id} deleted.");
+            catch(Exception e)
+            {
+                return NotFound(e.Message);
+            }
         }
     }
 }

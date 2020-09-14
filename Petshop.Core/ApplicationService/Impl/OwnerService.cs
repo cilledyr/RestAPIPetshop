@@ -37,7 +37,27 @@ namespace Petshop.Core.ApplicationService.Impl
 
         public Owner FindOwnerByID(int theId)
         {
-            return _ownerRepo.FindOwnerByID(theId);
+            List<Owner> foundOwners = _ownerRepo.FindOwnerByID(theId);
+            if (foundOwners.Count != 1)
+            {
+                return null;
+            }
+            else
+            {
+                Owner theOwner = foundOwners.Select(o => new Owner()
+                {
+                    OwnerId = o.OwnerId,
+                    OwnerFirstName = o.OwnerFirstName,
+                    OwnerLastName = o.OwnerLastName,
+                    OwnerAddress = o.OwnerAddress,
+                    OwnerPhoneNr = o.OwnerPhoneNr,
+                    OwnerEmail = o.OwnerEmail,
+                    OwnerPets = FindAllPetsByOwner(o)
+
+                }).FirstOrDefault(o => o.OwnerId == theId);
+
+                return theOwner;
+            }
         }
 
         public List<Owner> FindOwnersByName(string theName)
@@ -67,7 +87,7 @@ namespace Petshop.Core.ApplicationService.Impl
                     int searchId;
                     if (int.TryParse(searchValue, out searchId))
                     {
-                        return new List<Owner> { _ownerRepo.FindOwnerByID(searchId) };
+                        return _ownerRepo.FindOwner(searchId);
                     }
                     else
                     {
@@ -77,8 +97,20 @@ namespace Petshop.Core.ApplicationService.Impl
                     throw new InvalidDataException(message: "Something unexpected went wrong.");
             }
         }
-        public Owner UpdateOwner(Owner updatedOwner, int toUpdateInt, string updateValue)
-        {
+        public Owner UpdateOwner(int updatedId, int toUpdateInt, string updateValue)
+        { 
+
+            Owner updatedOwner = null;
+            List<Owner> theOwners = _ownerRepo.FindOwner(updatedId);
+            if(theOwners.Count != 1)
+            {
+                throw new Exception(message: "I am sorry, wrong id.");
+            }
+            else
+            {
+                updatedOwner = theOwners[0];
+            }
+
             switch (toUpdateInt)
             {
                 case 1:
@@ -94,6 +126,22 @@ namespace Petshop.Core.ApplicationService.Impl
                 default:
                     throw new InvalidDataException(message: "Something unexpected went wrong.");
             }
+        }
+
+        public Owner UpdateOwner(Owner theNewOwner)
+        {
+            
+            List<Owner> theOwners = _ownerRepo.FindOwner(theNewOwner.OwnerId);
+            if (theOwners.Count != 1)
+            {
+                throw new Exception(message: "I am sorry, wrong id.");
+            }
+            else
+            {
+                Owner theOldOwner = theOwners[0];
+                return _ownerRepo.UpdateFullOwner(theNewOwner, theOldOwner);
+            }
+            
         }
     }
 }

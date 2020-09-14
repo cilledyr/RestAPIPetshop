@@ -49,16 +49,9 @@ namespace Petshop.Infrastructure.Data
         {
             List<Owner> deletedOwner = (allTheOwners.Where(owner => owner.OwnerId == theId)).ToList();
 
-            if (deletedOwner.Count == 1)
-            {
-                allThePets = allThePets.Where(pet => pet.PetOwner != deletedOwner[0]);
-                allTheOwners = allTheOwners.Where(owner => owner != deletedOwner[0]);
-                return deletedOwner[0];
-            }
-            else
-            {
-                throw new InvalidDataException(message: "Wrong number of the id have been found.");
-            }
+            allThePets = allThePets.Where(pet => pet.PetOwner != deletedOwner[0]);
+            allTheOwners = allTheOwners.Where(owner => owner != deletedOwner[0]);
+            return deletedOwner[0];
         }
 
         internal static Owner updateOwnerPhoneNr(Owner updatedOwner, string updateValue)
@@ -249,20 +242,21 @@ namespace Petshop.Infrastructure.Data
         internal static Pet DeletePetById(int theId)
         {
             List<Pet> deletedPets = (allThePets.Where(pet => pet.PetId == theId)).ToList();
-            if(deletedPets.Count == 1)
-            {
-                allThePets = allThePets.Where(pet => pet != deletedPets[0]);
-                return deletedPets[0];
-            }
-            else
-            {
-                throw new InvalidDataException(message: "Wrong amount of Id's located.");
-            }
+            allThePets = allThePets.Where(pet => pet != deletedPets[0]);
+            return deletedPets[0];
+
         }
 
         internal static Pet UpdateFullPet(Pet theOldPet, Pet theNewPet)
         {
-            theOldPet = theNewPet;
+            theOldPet.PetName = theNewPet.PetName;
+            theOldPet.PetSpecies = theNewPet.PetSpecies;
+            theOldPet.PetBirthday = theNewPet.PetBirthday;
+            theOldPet.PetSoldDate = theNewPet.PetSoldDate;
+            theOldPet.PetColor = theNewPet.PetColor;
+            theOldPet.PetOwner = theNewPet.PetOwner;
+            theOldPet.PetPreviousOwner = theNewPet.PetPreviousOwner;
+            theOldPet.PetPrice = theNewPet.PetPrice;
             return theOldPet;
         }
 
@@ -284,6 +278,16 @@ namespace Petshop.Infrastructure.Data
                 allThePets = allThePets.Concat(newPet);
             }
             return theNewPet;
+        }
+
+        internal static Owner UpdateFullOwner(Owner theNewOwner, Owner theOldOwner)
+        {
+            theOldOwner.OwnerFirstName = theNewOwner.OwnerFirstName;
+            theOldOwner.OwnerLastName = theNewOwner.OwnerLastName;
+            theOldOwner.OwnerAddress = theNewOwner.OwnerAddress;
+            theOldOwner.OwnerPhoneNr = theNewOwner.OwnerPhoneNr;
+            theOldOwner.OwnerEmail = theNewOwner.OwnerEmail;
+            return theOldOwner;
         }
     }
 

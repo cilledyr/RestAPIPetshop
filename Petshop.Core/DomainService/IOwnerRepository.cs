@@ -11,7 +11,7 @@ namespace Petshop.Core.DomainService
         public IEnumerable<Owner> FindOwnerByPhonenr(string searchValue);
         public IEnumerable<Owner> FindOwnerByAddress(string searchValue);
         public IEnumerable<Owner> FindOwnerByEmail(string searchValue);
-        public Owner FindOwnerByID(int searchId);
+        public List<Owner> FindOwnerByID(int searchId);
         public Owner UpdateFirstNameOfOwner(Owner updatedOwner, string updateValue);
         public Owner UpdateLastNameOfOwner(Owner updatedOwner, string updateValue);
         public Owner UpdateAddressOfOwner(Owner updatedOwner, string updateValue);
@@ -22,6 +22,7 @@ namespace Petshop.Core.DomainService
         public IEnumerable<Owner> GetAllOwners();
         public Owner AddNewOwner(Owner theNewOwner);
 
-        public Owner FindOwner(int theOwnerId);
+        public List<Owner> FindOwner(int theOwnerId);
+        public Owner UpdateFullOwner(Owner theNewOwner, Owner theOldOwner);
     }
 }

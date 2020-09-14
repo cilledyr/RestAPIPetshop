@@ -58,7 +58,15 @@ namespace Petshop.Core.ApplicationService.Impl
             theNewPet.PetSoldDate = theSelectedPurchaseDate;
             theNewPet.PetPreviousOwner = thePreviousOwner;
             theNewPet.PetPrice = thePetPrice;
-            theNewPet.PetOwner = _ownerRepo.FindOwner(theOwnerId);
+            List<Owner> theOwners = _ownerRepo.FindOwner(theOwnerId);
+            if(theOwners.Count != 1)
+            {
+                throw new Exception(message: "Could not find the right owner");
+            }
+            else
+            {
+                theNewPet.PetOwner = theOwners[0];
+            }
 
             return  _petRepo.AddNewPet(theNewPet);
 
@@ -300,6 +308,30 @@ namespace Petshop.Core.ApplicationService.Impl
             }
             else
             {
+                if(thePet.PetOwner.OwnerId == 0)
+                {
+                    thePet.PetOwner = _ownerRepo.AddNewOwner(thePet.PetOwner);
+                }
+                else
+                {
+                    try
+                    {
+                        List<Owner> theOwners = _ownerRepo.FindOwner(thePet.PetOwner.OwnerId);
+                        if(theOwners.Count != 1)
+                        {
+                            throw new Exception(message: "Sorry wrong number of owners found with that ID.");
+                        }
+                        else
+                        {
+                            thePet.PetOwner = theOwners[0];
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        throw new Exception(message: e.Message);
+                    }
+                }
+                
                 return _petRepo.UpdateFullPet(thePets[0], thePet);
             }
         }

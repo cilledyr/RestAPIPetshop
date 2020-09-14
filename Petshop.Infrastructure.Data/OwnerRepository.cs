@@ -39,29 +39,10 @@ namespace Petshop.Infrastructure.Data
             return ownerByEmail;
         }
 
-        public Owner FindOwnerByID(int searchId)
+        public List<Owner> FindOwnerByID(int searchId)
         {
-            List<Owner> foundOwners = (PetDB.allTheOwners.Where(owner => owner.OwnerId == searchId)).ToList();
-            if (foundOwners.Count <= 0 || foundOwners.Count > 1)
-            {
-                return null;
-            }
-            else
-            {
-                Owner theOwner = PetDB.allTheOwners.Select(o => new Owner()
-                {
-                    OwnerId = o.OwnerId,
-                    OwnerFirstName = o.OwnerFirstName,
-                    OwnerLastName = o.OwnerLastName,
-                    OwnerAddress = o.OwnerAddress,
-                    OwnerPhoneNr = o.OwnerPhoneNr,
-                    OwnerEmail = o.OwnerEmail,
-                    OwnerPets = FindAllPetsByOwner(o)
-                    
-                }).FirstOrDefault(o => o.OwnerId == searchId);
-                
-                return theOwner;
-            }
+            return PetDB.allTheOwners.Where(owner => owner.OwnerId == searchId).ToList();
+            
         }
 
         public Owner AddNewOwner(Owner theNewOwner)
@@ -105,17 +86,14 @@ namespace Petshop.Infrastructure.Data
             return OwnerPets;
         }
 
-        public Owner FindOwner(int theOwnerId)
+        public List<Owner> FindOwner(int theOwnerId)
         {
-            List<Owner> foundOwners = (PetDB.allTheOwners.Where(owner => owner.OwnerId == theOwnerId)).ToList();
-            if (foundOwners.Count <= 0 || foundOwners.Count > 1)
-            {
-                return null;
-            }
-            else
-            {
-                return foundOwners[0];
-            }
+            return PetDB.allTheOwners.Where(owner => owner.OwnerId == theOwnerId).ToList();
+           
+        }
+        public Owner UpdateFullOwner(Owner theNewOwner, Owner theOldOwner)
+        {
+            return PetDB.UpdateFullOwner(theNewOwner, theOldOwner);
         }
     }
 }
