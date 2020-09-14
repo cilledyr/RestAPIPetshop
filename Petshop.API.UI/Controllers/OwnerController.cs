@@ -51,7 +51,7 @@ namespace Petshop.RestAPI.UI.Controllers
             {
                 return BadRequest("You have not entered all the needed data.");
             }
-            return _ownerService.AddNewOwner(theOwner.OwnerFirstName, theOwner.OwnerLastName, theOwner.OwnerAddress, theOwner.OwnerPhoneNr, theOwner.OwnerEmail);
+            return Created("Successfully created the following: ", _ownerService.AddNewOwner(theOwner));
         }
 
         public class updateOwnerObj
@@ -100,7 +100,6 @@ namespace Petshop.RestAPI.UI.Controllers
         {
             try
             {
-                _ownerService.FindOwnerByID(id);
                 _ownerService.DeleteOwnerByID(id);
                 return Ok($"Owner with Id {id} deleted.");
             }

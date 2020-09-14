@@ -15,20 +15,21 @@ namespace Petshop.Core.ApplicationService.Impl
         {
             _ownerRepo = ownerRepository;
         }
-        public Owner AddNewOwner(string firstname, string lastname, string address, string phonenr, string email)
+        public Owner AddNewOwner(Owner theNewOwner)
         {
-            Owner theNewOwner = new Owner();
-            theNewOwner.OwnerFirstName = firstname;
-            theNewOwner.OwnerLastName = lastname;
-            theNewOwner.OwnerAddress = address;
-            theNewOwner.OwnerPhoneNr = phonenr;
-            theNewOwner.OwnerEmail = email;
-
             return _ownerRepo.AddNewOwner(theNewOwner);
         }
         public Owner DeleteOwnerByID(int theId)
         {
-            return _ownerRepo.DeleteOwnerById(theId);
+            List<Owner> toBeDeletedOwners = _ownerRepo.FindOwner(theId);
+            if(toBeDeletedOwners.Count != 1)
+            {
+                throw new Exception("Could not find anyone to delete.");
+            }
+            else
+            {
+                return _ownerRepo.DeleteOwner(toBeDeletedOwners[0]);
+            }
         }
         public List<Pet> FindAllPetsByOwner(Owner theOwner)
         {

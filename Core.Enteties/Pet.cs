@@ -20,6 +20,7 @@ namespace Petshop.Core.Enteties
             Rabbit
         }
         public Species PetSpecies { get; set; }
+        public PetType PetType { get; set; }
 
         public DateTime PetBirthday { get; set; }
         public DateTime PetSoldDate { get; set; }

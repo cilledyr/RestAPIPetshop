@@ -57,7 +57,7 @@ namespace Petshop.RestAPI.UI.Controllers
                 {
                     return BadRequest("You have not entered all the required Owner data.");
                 }
-                theOwner = _ownerService.AddNewOwner(theOwner.OwnerFirstName, theOwner.OwnerLastName, theOwner.OwnerAddress, theOwner.OwnerPhoneNr, theOwner.OwnerEmail);
+                theOwner = _ownerService.AddNewOwner(theOwner);
             }
             else
             {
@@ -69,7 +69,7 @@ namespace Petshop.RestAPI.UI.Controllers
             }
             
 
-            return Ok(_petService.AddNewPet(thePet.PetName, (int)thePet.PetSpecies , thePet.PetColor, thePet.PetBirthday, thePet.PetSoldDate, thePet.PetPreviousOwner, thePet.PetPrice, theOwner.OwnerId));
+            return Created("Successfully created the following pet: ", _petService.AddNewPet(thePet.PetName, (int)thePet.PetSpecies , thePet.PetColor, thePet.PetBirthday, thePet.PetSoldDate, thePet.PetPreviousOwner, thePet.PetPrice, theOwner.OwnerId));
         }
 
         public class updatePetObj
@@ -88,15 +88,8 @@ namespace Petshop.RestAPI.UI.Controllers
             }
             try
             {
-                Pet thePet = _petService.FindPetByID(id);
-                try
-                {
-                    return Ok(_petService.UpdatePet(thePet, thePetObj.updateParam.Value, thePetObj.updateData));
-                }
-                catch (InvalidDataException e)
-                {
-                    return BadRequest(e.Message);
-                }
+                return Ok(_petService.UpdatePet(id, thePetObj.updateParam.Value, thePetObj.updateData));
+                
             }
             catch(Exception e)
             {
@@ -115,19 +108,20 @@ namespace Petshop.RestAPI.UI.Controllers
             {
                 return BadRequest("The id's of the Pet must match.");
             }
-            if (string.IsNullOrEmpty(theUpdatedPet.PetName) || string.IsNullOrEmpty(theUpdatedPet.PetSpecies.ToString()) || string.IsNullOrEmpty(theUpdatedPet.PetColor) || theUpdatedPet.PetBirthday == null || theUpdatedPet.PetSoldDate == null || string.IsNullOrEmpty(theUpdatedPet.PetPreviousOwner) || theUpdatedPet.PetOwner == null)
+            if (string.IsNullOrEmpty(theUpdatedPet.PetName) || theUpdatedPet.PetType == null || string.IsNullOrEmpty(theUpdatedPet.PetColor) ||
+                theUpdatedPet.PetBirthday == null || theUpdatedPet.PetSoldDate == null || string.IsNullOrEmpty(theUpdatedPet.PetPreviousOwner) || theUpdatedPet.PetOwner == null ||
+                theUpdatedPet.PetType == null || (theUpdatedPet.PetType.PetTypeId == 0 && string.IsNullOrEmpty(theUpdatedPet.PetType.PetTypeName)))
             {
                 return BadRequest("You have not entered all the required Pet data");
             }
 
             try
             {
-                _petService.FindPetByID(id);
                 return Ok(_petService.UpdatePet(theUpdatedPet));
             }
             catch(Exception e)
             {
-                return NotFound(e);
+                return NotFound(e.Message);
             }
             
            

@@ -29,23 +29,13 @@ namespace Petshop.RestAPI.UI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            bool devMode = true;
             services.AddScoped<IOwnerRepository, OwnerRepository>();
             services.AddScoped<IPetRepository, PetRepository>();
             services.AddScoped<IPetService, PetService>();
             services.AddScoped<IOwnerService, OwnerService>();
+            services.AddScoped<IPetTypeRepository, PetTypeReposiory>();
+            services.AddScoped<IPetTypeService, PetTypeService>();
 
-            var provider = services.BuildServiceProvider();
-
-            var ownerRepo = provider.GetService<IOwnerRepository>();
-            var petRepo = provider.GetService<IPetRepository>();
-
-            if (devMode)
-            {
-                var dataInit = new DataInitializer(ownerRepo, petRepo);
-                dataInit.InitData();
-                //Console.WriteLine(dataInit.InitData()); //I prefer the program telling me that i have injected data.
-            }
 
             services.AddControllers();
         }
@@ -56,6 +46,14 @@ namespace Petshop.RestAPI.UI
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                using(var scope = app.ApplicationServices.CreateScope())
+                {
+                    var ownerRepo = scope.ServiceProvider.GetService<IOwnerRepository>();
+                    var petRepo = scope.ServiceProvider.GetService<IPetRepository>();
+                    var petTypeRepo = scope.ServiceProvider.GetService<IPetTypeRepository>();
+                    new DataInitializer(ownerRepo, petRepo, petTypeRepo).InitData();
+                }
             }
 
             //app.UseHttpsRedirection();

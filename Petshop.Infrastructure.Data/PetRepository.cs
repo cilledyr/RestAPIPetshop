@@ -21,9 +21,9 @@ namespace Petshop.Infrastructure.Data
             return PetDB.AddNewPet(theNewPet);
         }
 
-        public Pet DeletePetById(int theId)
+        public Pet DeletePet(Pet toBeDeletedPet)
         {
-            return PetDB.DeletePetById(theId);
+            return PetDB.DeletePet(toBeDeletedPet);
         }
 
         public IEnumerable<Pet> FindPetsByName(string theName)
@@ -48,9 +48,9 @@ namespace Petshop.Infrastructure.Data
             return PetDB.UpdateColourOfPet(updatedPet, updateValue);
         }
 
-        public Pet UpdateSpeciesOfPet(Pet updatedPet, Pet.Species updateValue)
+        public Pet UpdateTypeOfPet(Pet updatedPet, PetType updateValue)
         {
-            return PetDB.UpdateSpeciesOfPet(updatedPet, updateValue);
+            return PetDB.UpdateTypeOfPet(updatedPet, updateValue);
         }
 
         public Pet UpdateBirthdayOfPet(Pet updatedPet, DateTime updateValue)
@@ -120,9 +120,9 @@ namespace Petshop.Infrastructure.Data
             return petsByPrice;
         }
 
-        public Pet UpdateOwnerOfPet(Pet updatedPet, int ownerId)
+        public Pet UpdateOwnerOfPet(Pet updatedPet, Owner newOwner)
         {
-            return PetDB.UpdateOwnerOfPet(updatedPet, ownerId);
+            return PetDB.UpdateOwnerOfPet(updatedPet, newOwner);
         }
 
         

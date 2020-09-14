@@ -75,9 +75,9 @@ namespace Petshop.Infrastructure.Data
             return PetDB.updateOwnerEmail(updatedOwner, updateValue);
         }
 
-        public Owner DeleteOwnerById(int theId)
+        public Owner DeleteOwner(Owner toBeDeletedOwner)
         {
-            return PetDB.DeleteOwnerById(theId);
+            return PetDB.DeleteOwner(toBeDeletedOwner);
         }
 
         public List<Pet> FindAllPetsByOwner(Owner theOwner)

@@ -10,14 +10,27 @@ namespace Petshop.Infrastructure.Data
     {
         private readonly IOwnerRepository _ownerRepo;
         private readonly IPetRepository _petRepo;
-        public DataInitializer(IOwnerRepository ownerRepository, IPetRepository petRepository)
+        private readonly IPetTypeRepository _petTypeRepo;
+        public DataInitializer(IOwnerRepository ownerRepository, IPetRepository petRepository, IPetTypeRepository petTypeRepository)
         {
             _ownerRepo = ownerRepository;
             _petRepo = petRepository;
+            _petTypeRepo = petTypeRepository;
         }
 
         public string InitData()
         {
+            List<PetType> allPetTypes = new List<PetType>
+            {
+                new PetType {PetTypeName = "Cat"},
+                new PetType {PetTypeName = "Dog"},
+                new PetType {PetTypeName = "Horse"},
+                new PetType {PetTypeName = "Fish"},
+                new PetType {PetTypeName = "Gerbil"},
+                new PetType {PetTypeName = "Hamster"},
+                new PetType {PetTypeName = "Rabbit"}
+            };
+
             List<Owner> allOwners = new List<Owner>
             {
                 new Owner{OwnerFirstName = "Lars", OwnerLastName = "Rasmussen", OwnerAddress = "SweetStreet 4, 6700 Esbjerg", OwnerPhoneNr = "+45 1234 5678", OwnerEmail = "lars@rasmussen.dk"},
@@ -33,22 +46,27 @@ namespace Petshop.Infrastructure.Data
             };
 
             List<Pet>allPets = new List<Pet> {
-                new Pet {PetBirthday = DateTime.Now.AddDays(-25), PetColor = "grey", PetName = "Hans", PetPreviousOwner = "Aniyah Chan", PetOwner= allOwners[0], PetSoldDate = DateTime.Now.AddMonths(0), PetSpecies = Pet.Species.Gerbil, PetPrice = 10 },
-                new Pet {PetBirthday = DateTime.Now.AddDays(-400), PetColor = "black and white", PetName = "Katia", PetPreviousOwner = "Alison Melia", PetOwner= allOwners[1], PetSoldDate = DateTime.Now.AddMonths(-3), PetSpecies = Pet.Species.Cat, PetPrice = 235 },
-                new Pet {PetBirthday = DateTime.Now.AddDays(-320), PetColor = "brown", PetName = "Jellybelly", PetPreviousOwner = "Abdallah Dejesus", PetOwner= allOwners[2], PetSoldDate = DateTime.Now.AddMonths(-5), PetSpecies = Pet.Species.Gerbil, PetPrice = 2 },
-                new Pet {PetBirthday = DateTime.Now.AddDays(-50), PetColor = "black", PetName = "Faithful", PetPreviousOwner = "Teegan Boyer", PetOwner= allOwners[3], PetSoldDate = DateTime.Now.AddMonths(-1), PetSpecies = Pet.Species.Dog, PetPrice = 41 },
-                new Pet {PetBirthday = DateTime.Now.AddDays(-81), PetColor = "orange striped", PetName = "Enigma", PetPreviousOwner = "Vinnie Odling", PetOwner= allOwners[4], PetSoldDate = DateTime.Now.AddMonths(-2), PetSpecies = Pet.Species.Fish, PetPrice = 56 },
-                new Pet {PetBirthday = DateTime.Now.AddDays(-691), PetColor = "purple", PetName = "Bob", PetPreviousOwner = "Amina Brookes", PetOwner= allOwners[4], PetSoldDate = DateTime.Now.AddMonths(-8), PetSpecies = Pet.Species.Fish, PetPrice = 98 },
-                new Pet {PetBirthday = DateTime.Now.AddDays(-259), PetColor = "silver tabby", PetName = "Linea", PetPreviousOwner = "Carmel Livingson", PetOwner= allOwners[5], PetSoldDate = DateTime.Now.AddMonths(-3), PetSpecies = Pet.Species.Cat, PetPrice = 59 },
-                new Pet {PetBirthday = DateTime.Now.AddDays(-856), PetColor = "caramel", PetName = "Tommy", PetPreviousOwner = "Nicole Jaramillo", PetOwner= allOwners[6], PetSoldDate = DateTime.Now.AddMonths(-15), PetSpecies = Pet.Species.Hamster, PetPrice = 76 },
-                new Pet {PetBirthday = DateTime.Now.AddDays(-1576), PetColor = "black", PetName = "Beauty", PetPreviousOwner = "Hibah Bartlet", PetOwner= allOwners[7], PetSoldDate = DateTime.Now.AddMonths(-21), PetSpecies = Pet.Species.Horse, PetPrice = 1090 },
-                new Pet {PetBirthday = DateTime.Now.AddDays(-10), PetColor = "white", PetName = "Beatrice", PetPreviousOwner = "Radhika Baird", PetOwner= allOwners[8], PetSoldDate = DateTime.Now, PetSpecies = Pet.Species.Dog, PetPrice = 28 },
-                new Pet {PetBirthday = DateTime.Now.AddDays(-33), PetColor = "beige", PetName = "Jumpy", PetPreviousOwner = "Havin Boyle", PetOwner= allOwners[0], PetSoldDate = DateTime.Now.AddMonths(-1), PetSpecies = Pet.Species.Rabbit, PetPrice = 100 },
-                new Pet {PetBirthday = DateTime.Now.AddDays(-63), PetColor = "spotted brown", PetName = "Cujo", PetPreviousOwner = "Franklin Barajas", PetOwner= allOwners[9], PetSoldDate = DateTime.Now.AddMonths(-1), PetSpecies = Pet.Species.Dog, PetPrice = 346 },
-                new Pet {PetBirthday = DateTime.Now.AddDays(-18), PetColor = "merle", PetName = "Shenna", PetPreviousOwner = "Jovan Bloggs", PetOwner= allOwners[1], PetSoldDate = DateTime.Now, PetSpecies = Pet.Species.Cat, PetPrice = 865 },
-                new Pet {PetBirthday = DateTime.Now.AddDays(-156), PetColor = "red", PetName = "Firehoof", PetPreviousOwner = "Aamna Atherton", PetOwner= allOwners[7], PetSoldDate = DateTime.Now.AddMonths(-3), PetSpecies = Pet.Species.Horse, PetPrice = 2096 }
+                new Pet {PetBirthday = DateTime.Now.AddDays(-25), PetColor = "grey", PetName = "Hans", PetPreviousOwner = "Aniyah Chan", PetOwner= allOwners[0], PetSoldDate = DateTime.Now.AddMonths(0), PetType = allPetTypes[0], PetPrice = 10 },
+                new Pet {PetBirthday = DateTime.Now.AddDays(-400), PetColor = "black and white", PetName = "Katia", PetPreviousOwner = "Alison Melia", PetOwner= allOwners[1], PetSoldDate = DateTime.Now.AddMonths(-3), PetType = allPetTypes[1], PetPrice = 235 },
+                new Pet {PetBirthday = DateTime.Now.AddDays(-320), PetColor = "brown", PetName = "Jellybelly", PetPreviousOwner = "Abdallah Dejesus", PetOwner= allOwners[2], PetSoldDate = DateTime.Now.AddMonths(-5), PetType = allPetTypes[2], PetPrice = 2 },
+                new Pet {PetBirthday = DateTime.Now.AddDays(-50), PetColor = "black", PetName = "Faithful", PetPreviousOwner = "Teegan Boyer", PetOwner= allOwners[3], PetSoldDate = DateTime.Now.AddMonths(-1), PetType = allPetTypes[1], PetPrice = 41 },
+                new Pet {PetBirthday = DateTime.Now.AddDays(-81), PetColor = "orange striped", PetName = "Enigma", PetPreviousOwner = "Vinnie Odling", PetOwner= allOwners[4], PetSoldDate = DateTime.Now.AddMonths(-2), PetType = allPetTypes[3], PetPrice = 56 },
+                new Pet {PetBirthday = DateTime.Now.AddDays(-691), PetColor = "purple", PetName = "Bob", PetPreviousOwner = "Amina Brookes", PetOwner= allOwners[4], PetSoldDate = DateTime.Now.AddMonths(-8), PetType = allPetTypes[3], PetPrice = 98 },
+                new Pet {PetBirthday = DateTime.Now.AddDays(-259), PetColor = "silver tabby", PetName = "Linea", PetPreviousOwner = "Carmel Livingson", PetOwner= allOwners[5], PetSoldDate = DateTime.Now.AddMonths(-3), PetType = allPetTypes[4], PetPrice = 59 },
+                new Pet {PetBirthday = DateTime.Now.AddDays(-856), PetColor = "caramel", PetName = "Tommy", PetPreviousOwner = "Nicole Jaramillo", PetOwner= allOwners[6], PetSoldDate = DateTime.Now.AddMonths(-15), PetType = allPetTypes[5], PetPrice = 76 },
+                new Pet {PetBirthday = DateTime.Now.AddDays(-1576), PetColor = "black", PetName = "Beauty", PetPreviousOwner = "Hibah Bartlet", PetOwner= allOwners[7], PetSoldDate = DateTime.Now.AddMonths(-21), PetType = allPetTypes[6], PetPrice = 1090 },
+                new Pet {PetBirthday = DateTime.Now.AddDays(-10), PetColor = "white", PetName = "Beatrice", PetPreviousOwner = "Radhika Baird", PetOwner= allOwners[8], PetSoldDate = DateTime.Now, PetType = allPetTypes[3], PetPrice = 28 },
+                new Pet {PetBirthday = DateTime.Now.AddDays(-33), PetColor = "beige", PetName = "Jumpy", PetPreviousOwner = "Havin Boyle", PetOwner= allOwners[0], PetSoldDate = DateTime.Now.AddMonths(-1), PetType = allPetTypes[2], PetPrice = 100 },
+                new Pet {PetBirthday = DateTime.Now.AddDays(-63), PetColor = "spotted brown", PetName = "Cujo", PetPreviousOwner = "Franklin Barajas", PetOwner= allOwners[9], PetSoldDate = DateTime.Now.AddMonths(-1), PetType = allPetTypes[6], PetPrice = 346 },
+                new Pet {PetBirthday = DateTime.Now.AddDays(-18), PetColor = "merle", PetName = "Shenna", PetPreviousOwner = "Jovan Bloggs", PetOwner= allOwners[1], PetSoldDate = DateTime.Now, PetType = allPetTypes[3], PetPrice = 865 },
+                new Pet {PetBirthday = DateTime.Now.AddDays(-156), PetColor = "red", PetName = "Firehoof", PetPreviousOwner = "Aamna Atherton", PetOwner= allOwners[7], PetSoldDate = DateTime.Now.AddMonths(-3), PetType = allPetTypes[0], PetPrice = 2096 }
 
             };
+
+            foreach(var petType in allPetTypes)
+            {
+                _petTypeRepo.AddNewPetType(petType);
+            }
 
             foreach (var owner in allOwners)
             {

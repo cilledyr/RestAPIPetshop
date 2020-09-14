@@ -13,11 +13,12 @@ namespace Petshop.Core.ApplicationService.Impl
 
         private IPetRepository _petRepo;
         private IOwnerRepository _ownerRepo;
-
-        public PetService(IPetRepository petRepository, IOwnerRepository ownerRepository)
+        private IPetTypeRepository _petTypeRepo;
+        public PetService(IPetRepository petRepository, IOwnerRepository ownerRepository, IPetTypeRepository petTypeRepository)
         {
             _petRepo = petRepository;
             _ownerRepo = ownerRepository;
+            _petTypeRepo = petTypeRepository;
         }
 
 
@@ -77,7 +78,12 @@ namespace Petshop.Core.ApplicationService.Impl
 
         public Pet DeletePetByID(int theId)
         {
-            return _petRepo.DeletePetById(theId);
+            List<Pet> toBeDeletedPets = _petRepo.FindPetByID(theId);
+            if(toBeDeletedPets.Count != 1 || toBeDeletedPets[0] == null)
+            {
+                throw new InvalidDataException(message: "Could not find that pet Id to delete.");
+            }
+            return _petRepo.DeletePet(toBeDeletedPets[0]);
         }
 
 
@@ -85,7 +91,7 @@ namespace Petshop.Core.ApplicationService.Impl
         public Pet FindPetByID(int theNewId)
         {
             List<Pet> thePets = _petRepo.FindPetByID(theNewId);
-            if (thePets.Count <= 0 || thePets.Count > 1)
+            if (thePets.Count != 1)
             {
                 throw new Exception(message: "I am sorry wrong amonut of pets found by ID.");
             }
@@ -209,8 +215,10 @@ namespace Petshop.Core.ApplicationService.Impl
 
 
 
-        public Pet UpdatePet(Pet updatedPet, int toUpdateInt, string updateValue)
+        public Pet UpdatePet(int updatePetId, int toUpdateInt, string updateValue)
         {
+            Pet updatedPet = FindPetByID(updatePetId);
+
             switch (toUpdateInt)
             {
                 case 1:
@@ -218,38 +226,24 @@ namespace Petshop.Core.ApplicationService.Impl
                 case 2:
                     return _petRepo.UpdateColorOfPet(updatedPet, updateValue);
                 case 3:
-                    int theUpdate;
-                    Pet.Species theupdatedValue = Pet.Species.Dog;
-                    if(int.TryParse(updateValue, out theUpdate) && theUpdate >=1 && theUpdate <=7)
+                    int petTypeId;
+                    List<PetType> updatedType = null;
+                    if (int.TryParse(updateValue, out petTypeId))
                     {
-                        switch (theUpdate)
-                        {
-                            case 1:
-                                theupdatedValue = Pet.Species.Dog;
-                                break;
-                            case 2:
-                                theupdatedValue = Pet.Species.Cat;
-                                break;
-                            case 3:
-                                theupdatedValue = Pet.Species.Fish;
-                                break;
-                            case 4:
-                                theupdatedValue = Pet.Species.Horse;
-                                break;
-                            case 5:
-                                theupdatedValue = Pet.Species.Hamster;
-                                break;
-                            case 6:
-                                theupdatedValue = Pet.Species.Gerbil;
-                                break;
-                            case 7:
-                                theupdatedValue = Pet.Species.Rabbit;
-                                break;
-                            default:
-                                throw new InvalidDataException(message: "Index for species is out of bounds");
-                        }
+                        updatedType = _petTypeRepo.FindPetTypeById(petTypeId);
                     }
-                    return _petRepo.UpdateSpeciesOfPet(updatedPet, theupdatedValue);
+                    else
+                    {
+                        updatedType = _petTypeRepo.FindPetTypeByName(updateValue);
+                    }
+                    if(updatedType.Count != 1)
+                    {
+                        throw new Exception("Can't find a PetType of that variety");
+                    }
+                    else
+                    {
+                        return _petRepo.UpdateTypeOfPet(updatedPet, updatedType[0]);
+                    }
 
                 case 4:
                     DateTime theUpdateValue = DateTime.Now;
@@ -288,7 +282,24 @@ namespace Petshop.Core.ApplicationService.Impl
                     int id;
                     if(int.TryParse(updateValue, out id))
                     {
-                        return _petRepo.UpdateOwnerOfPet(updatedPet, id);
+                        List<Owner> allTheOwners = _ownerRepo.GetAllOwners().ToList();
+                        if(id != 0)
+                        {
+                            List<Owner> newOwners = _ownerRepo.FindOwner(id);
+                            if(newOwners.Count != 1 || newOwners[0] == null)
+                            {
+                                throw new Exception(message: "Could not find an owner with that Id.");
+                            }
+                            else
+                            {
+                                return _petRepo.UpdateOwnerOfPet(updatedPet, newOwners[0]);
+                            }
+                            
+                        }
+                        else
+                        {
+                            throw new InvalidDataException(message: "Id of owner out of Bounds.");
+                        }
                     }
                     else
                     {
@@ -302,9 +313,9 @@ namespace Petshop.Core.ApplicationService.Impl
         public Pet UpdatePet(Pet thePet)
         {
             List<Pet> thePets = _petRepo.FindPetByID(thePet.PetId);
-            if (thePets.Count <= 0 || thePets.Count > 1)
+            if (thePets.Count !=1 || thePets[0] == null)
             {
-                throw new Exception(message: "I am sorry wrong amonut of pets found by ID.");
+                throw new Exception(message: "I am sorry wrong amount of pets found by ID.");
             }
             else
             {
@@ -314,22 +325,29 @@ namespace Petshop.Core.ApplicationService.Impl
                 }
                 else
                 {
-                    try
+                    List<Owner> theOwners = _ownerRepo.FindOwner(thePet.PetOwner.OwnerId);
+                    if(theOwners.Count != 1 || theOwners[0] == null)
                     {
-                        List<Owner> theOwners = _ownerRepo.FindOwner(thePet.PetOwner.OwnerId);
-                        if(theOwners.Count != 1)
-                        {
-                            throw new Exception(message: "Sorry wrong number of owners found with that ID.");
-                        }
-                        else
-                        {
-                            thePet.PetOwner = theOwners[0];
-                        }
+                        throw new Exception(message: "Sorry wrong number of owners found with that ID.");
                     }
-                    catch(Exception e)
+                    else
                     {
-                        throw new Exception(message: e.Message);
+                        thePet.PetOwner = theOwners[0];
                     }
+                }
+                List<PetType> theType = null;
+                if (thePet.PetType.PetTypeId == 0)
+                {
+                    theType = _petTypeRepo.FindPetTypeByName(thePet.PetType.PetTypeName);
+
+                }
+                else
+                {
+                    theType = _petTypeRepo.FindPetTypeById(thePet.PetType.PetTypeId);
+                }
+                if(theType.Count != 1)
+                {
+                    throw new Exception("Could not find any PetType with these parameters.");
                 }
                 
                 return _petRepo.UpdateFullPet(thePets[0], thePet);

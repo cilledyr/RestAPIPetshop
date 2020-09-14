@@ -9,12 +9,12 @@ namespace Petshop.Core.DomainService
     {
         public IEnumerable<Pet> GetAllPets();
         public Pet AddNewPet(Pet theNewPet);
-        public Pet DeletePetById(int theId);
+        public Pet DeletePet(Pet toBeDeletedPet);
         public IEnumerable<Pet> FindPetsByName(string theName);
         public List<Pet> FindPetByID(int theId);
         public Pet UpdateNameOfPet(Pet updatedPet, string updateValue);
         public Pet UpdateColorOfPet(Pet updatedPet, string updateValue);
-        public Pet UpdateSpeciesOfPet(Pet updatedPet, Pet.Species updateValue);
+        public Pet UpdateTypeOfPet(Pet updatedPet, PetType updateValue);
         public Pet UpdateBirthdayOfPet(Pet updatedPet, DateTime updateValue);
         public Pet UpdateSoldDateOfPet(Pet updatedPet, DateTime updateValue);
         public Pet UpdatePreviousOwnerOfPet(Pet updatedPet, string updateValue);
@@ -29,7 +29,7 @@ namespace Petshop.Core.DomainService
         public IEnumerable<Pet> FindPetsByPreviousOwner(string searchValue);
         public IEnumerable<Pet> FindPetsByPrice(long thePriceValue);
 
-        public Pet UpdateOwnerOfPet(Pet updatedPet, int ownerId);
+        public Pet UpdateOwnerOfPet(Pet updatedPet, Owner newOwner);
 
     }
 }

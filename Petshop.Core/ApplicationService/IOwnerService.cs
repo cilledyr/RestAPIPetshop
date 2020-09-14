@@ -9,7 +9,7 @@ namespace Petshop.Core.ApplicationService
     {
         public List<Owner> GetAllOwners();
         public List<Owner> SearchForOwner(int toSearchInt, string searchValue);
-        public Owner AddNewOwner(string firstname, string lastname, string address, string phonenr, string email);
+        public Owner AddNewOwner(Owner theNewOwner);
         public List<Owner> FindOwnersByName(string theName);
         public Owner FindOwnerByID(int theId);
         public Owner UpdateOwner(int ownerId, int toUpdateInt, string updateValue);
