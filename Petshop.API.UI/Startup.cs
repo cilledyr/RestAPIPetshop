@@ -38,25 +38,33 @@ namespace Petshop.RestAPI.UI
 
 
             services.AddControllers();
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseSwagger();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
 
-                using(var scope = app.ApplicationServices.CreateScope())
-                {
-                    var ownerRepo = scope.ServiceProvider.GetService<IOwnerRepository>();
-                    var petRepo = scope.ServiceProvider.GetService<IPetRepository>();
-                    var petTypeRepo = scope.ServiceProvider.GetService<IPetTypeRepository>();
-                    new DataInitializer(ownerRepo, petRepo, petTypeRepo).InitData();
-                }
+                
             }
-
+            //remember this is for development only
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var ownerRepo = scope.ServiceProvider.GetService<IOwnerRepository>();
+                var petRepo = scope.ServiceProvider.GetService<IPetRepository>();
+                var petTypeRepo = scope.ServiceProvider.GetService<IPetTypeRepository>();
+                new DataInitializer(ownerRepo, petRepo, petTypeRepo).InitData();
+            }
             //app.UseHttpsRedirection();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "PetShopRestAPI V1");
+            });
 
             app.UseRouting();
 

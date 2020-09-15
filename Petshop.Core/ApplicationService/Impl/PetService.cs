@@ -23,36 +23,31 @@ namespace Petshop.Core.ApplicationService.Impl
 
 
 
-        public Pet AddNewPet(string thePetName, int theSelectedSpecies, string theColour, DateTime theSelectedBirthday, DateTime theSelectedPurchaseDate, string thePreviousOwner, double thePetPrice, int theOwnerId)
+        public Pet AddNewPet(string thePetName, PetType theNewType, string theColour, DateTime theSelectedBirthday, DateTime theSelectedPurchaseDate, string thePreviousOwner, double thePetPrice, int theOwnerId)
         {
             Pet theNewPet = new Pet();
             theNewPet.PetName = thePetName;
-            switch (theSelectedSpecies)
+            List<PetType> theType = null;
+            if(theNewType.PetTypeId != 0)
             {
-                case 1:
-                    theNewPet.PetSpecies = Pet.Species.Dog;
-                    break;
-                case 2:
-                    theNewPet.PetSpecies = Pet.Species.Cat;
-                    break;
-                case 3:
-                    theNewPet.PetSpecies = Pet.Species.Fish;
-                    break;
-                case 4:
-                    theNewPet.PetSpecies = Pet.Species.Horse;
-                    break;
-                case 5:
-                    theNewPet.PetSpecies = Pet.Species.Hamster;
-                    break;
-                case 6:
-                    theNewPet.PetSpecies = Pet.Species.Gerbil;
-                    break;
-                case 7:
-                    theNewPet.PetSpecies = Pet.Species.Rabbit;
-                    break;
-           
-                default:
-                    throw new InvalidDataException(message: "You entered a Species out of bounds.");
+                theType = _petTypeRepo.FindPetTypeById(theNewType.PetTypeId);
+                if(theType.Count != 1)
+                {
+                    throw new Exception("Sorry can't find that type.");
+                }
+            }
+            else
+            {
+                theType[0] = _petTypeRepo.AddNewPetType(theNewType);
+            }
+            
+            if(theType.Count != 1)
+            {
+                throw new Exception(message: "Could not find the type.");
+            }
+            else
+            {
+                theNewPet.PetType = theType[0];
             }
             theNewPet.PetColor = theColour;
             theNewPet.PetBirthday = theSelectedBirthday;
@@ -110,7 +105,16 @@ namespace Petshop.Core.ApplicationService.Impl
 
         public List<Pet> GetAllPets()
         {
-            return _petRepo.GetAllPets().ToList();
+            List<Pet> allPets = _petRepo.GetAllPets().ToList();
+            if (allPets != null)
+            {
+                return allPets;
+            }
+            else
+            {
+                throw new Exception(message: "No data could be found.");
+            }
+            
         }
 
         public List<Pet> GetSortedPets()
@@ -130,37 +134,32 @@ namespace Petshop.Core.ApplicationService.Impl
                     return _petRepo.FindPetsByColor(searchValue).ToList();
                 case 3:
                     int theSearch;
-                    Pet.Species theSearchCriteria = Pet.Species.Dog;
+                    List<PetType> thePetType = null;
                     if (int.TryParse(searchValue, out theSearch) && theSearch >= 1 && theSearch <= 7)
                     {
-                        switch (theSearch)
+                        thePetType = _petTypeRepo.FindPetTypeById(theSearch);
+                        if(thePetType.Count != 1 )
                         {
-                            case 1:
-                                theSearchCriteria = Pet.Species.Dog;
-                                break;
-                            case 2:
-                                theSearchCriteria = Pet.Species.Cat;
-                                break;
-                            case 3:
-                                theSearchCriteria = Pet.Species.Fish;
-                                break;
-                            case 4:
-                                theSearchCriteria = Pet.Species.Horse;
-                                break;
-                            case 5:
-                                theSearchCriteria = Pet.Species.Hamster;
-                                break;
-                            case 6:
-                                theSearchCriteria = Pet.Species.Gerbil;
-                                break;
-                            case 7:
-                                theSearchCriteria = Pet.Species.Rabbit;
-                                break;
-                            default:
-                                throw new InvalidDataException(message: "Index for species is out of bounds");
+                            throw new Exception(message: "Sorry could not find that PetType.");
+                        }
+                        else
+                        {
+                            return _petTypeRepo.FindAllPetsByType(thePetType[0]);
+                        }
+
+                    }
+                    else
+                    {
+                        thePetType = _petTypeRepo.FindPetTypeByName(searchValue);
+                        if (thePetType.Count != 1)
+                        {
+                            throw new Exception(message: "Sorry could not find that PetType.");
+                        }
+                        else
+                        {
+                            return _petTypeRepo.FindAllPetsByType(thePetType[0]);
                         }
                     }
-                    return _petRepo.FindPetsBySpecies(theSearchCriteria).ToList();
 
                 case 4:
                     DateTime theDateValue = DateTime.Now;

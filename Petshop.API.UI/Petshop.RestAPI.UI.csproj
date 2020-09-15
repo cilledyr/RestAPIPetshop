@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Core.Enteties\Petshop.Core.Enteties.csproj" />
     <ProjectReference Include="..\Petshop.Core\Petshop.Core.csproj" />
     <ProjectReference Include="..\Petshop.Infrastructure.Data\Petshop.Infrastructure.Data.csproj" />

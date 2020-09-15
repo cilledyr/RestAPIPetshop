@@ -1,4 +1,4 @@
-﻿using Petshop.Core.Enteties;
+﻿/*using Petshop.Core.Enteties;
 using Petshop.Core;
 using System;
 using System.Collections.Generic;
@@ -50,4 +50,4 @@ namespace Petshop.UI
 
         
     }
-}
+}*/

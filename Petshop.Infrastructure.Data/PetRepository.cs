@@ -90,12 +90,6 @@ namespace Petshop.Infrastructure.Data
             return petsByColor;
         }
 
-        public IEnumerable<Pet> FindPetsBySpecies(Pet.Species theSearchCriteria)
-        {
-            IEnumerable<Pet> petsBySpecies = PetDB.allThePets.Where(pet => pet.PetSpecies == theSearchCriteria);
-            return petsBySpecies;
-        }
-
         public IEnumerable<Pet> SearchPetsByBirthYear(DateTime theDateValue)
         {
             IEnumerable<Pet> petsByBirthyear = PetDB.allThePets.Where(pet => pet.PetBirthday.Year == theDateValue.Year);

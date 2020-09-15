@@ -24,9 +24,16 @@ namespace Petshop.RestAPI.UI.Controllers
 
 
         [HttpGet]
-        public IEnumerable<Pet> Get()
+        public ActionResult<IEnumerable<Pet>> Get()
         {
-            return _petService.GetAllPets();
+            try
+            {
+                return Ok(_petService.GetAllPets());
+            }
+            catch(Exception e)
+            {
+                return NotFound(e.Message);
+            }
         }
 
         [HttpGet("{petId}")]
@@ -46,10 +53,11 @@ namespace Petshop.RestAPI.UI.Controllers
         [HttpPost]
         public ActionResult<Pet> Post([FromBody] Pet thePet)
         {
-            if (string.IsNullOrEmpty(thePet.PetName) || string.IsNullOrEmpty(thePet.PetSpecies.ToString())|| string.IsNullOrEmpty(thePet.PetColor) || thePet.PetBirthday == null || thePet.PetSoldDate == null || string.IsNullOrEmpty(thePet.PetPreviousOwner) || thePet.PetOwner == null)
+            if (string.IsNullOrEmpty(thePet.PetName) || thePet.PetType == null|| string.IsNullOrEmpty(thePet.PetColor) || thePet.PetBirthday == null || thePet.PetSoldDate == null || string.IsNullOrEmpty(thePet.PetPreviousOwner) || thePet.PetOwner == null)
             {
                 return BadRequest("You have not entered all the required Pet data");
             }
+
             Owner theOwner = thePet.PetOwner;
             if(theOwner.OwnerId == 0)
             {
@@ -69,7 +77,7 @@ namespace Petshop.RestAPI.UI.Controllers
             }
             
 
-            return Created("Successfully created the following pet: ", _petService.AddNewPet(thePet.PetName, (int)thePet.PetSpecies , thePet.PetColor, thePet.PetBirthday, thePet.PetSoldDate, thePet.PetPreviousOwner, thePet.PetPrice, theOwner.OwnerId));
+            return Created("Successfully created the following pet: ", _petService.AddNewPet(thePet.PetName, thePet.PetType , thePet.PetColor, thePet.PetBirthday, thePet.PetSoldDate, thePet.PetPreviousOwner, thePet.PetPrice, theOwner.OwnerId));
         }
 
         public class updatePetObj

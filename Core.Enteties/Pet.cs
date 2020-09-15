@@ -9,7 +9,7 @@ namespace Petshop.Core.Enteties
     {
         public int PetId { get; set; }
         public string PetName { get; set; }
-        public enum Species
+       /* public enum Species
         {
             Dog,
             Cat,
@@ -19,7 +19,7 @@ namespace Petshop.Core.Enteties
             Gerbil,
             Rabbit
         }
-        public Species PetSpecies { get; set; }
+        public Species PetSpecies { get; set; }*/
         public PetType PetType { get; set; }
 
         public DateTime PetBirthday { get; set; }

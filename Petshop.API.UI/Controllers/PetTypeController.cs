@@ -22,7 +22,14 @@ namespace Petshop.RestAPI.UI.Controllers
         [HttpGet]
         public ActionResult<List<PetType>> Get()
         {
-            return _petTypeService.GetALlPetTypes();
+            try
+            {
+                return Ok(_petTypeService.GetALlPetTypes());
+            }
+            catch (Exception e)
+            {
+                return NotFound(e.Message);
+            }
         }
 
         // GET api/<PetTypeController>/5

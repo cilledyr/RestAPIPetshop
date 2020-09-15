@@ -73,7 +73,16 @@ namespace Petshop.Core.ApplicationService.Impl
 
         public List<PetType> GetALlPetTypes()
         {
-            return _petTypeRepo.GetAllPetTypes();
+            List<PetType> allPetTypes = _petTypeRepo.GetAllPetTypes().ToList();
+            if (allPetTypes != null)
+            {
+                return allPetTypes;
+            }
+            else
+            {
+                throw new Exception("No data could be found.");
+            }
+
         }
 
         public PetType UpdatePetType(PetType theUpdatedType)

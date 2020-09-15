@@ -23,7 +23,6 @@ namespace Petshop.Core.DomainService
         public Pet UpdateFullPet(Pet theOldPet, Pet theNewPet);
         public IEnumerable<Pet> GetSortedPets();
         public IEnumerable<Pet> FindPetsByColor(string searchValue);
-        public IEnumerable<Pet> FindPetsBySpecies(Pet.Species theSearchCriteria);
         public IEnumerable<Pet> SearchPetsByBirthYear(DateTime theDateValue);
         public IEnumerable<Pet> FindPetsBySoldDate(DateTime theSoldValue);
         public IEnumerable<Pet> FindPetsByPreviousOwner(string searchValue);

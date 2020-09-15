@@ -67,7 +67,16 @@ namespace Petshop.Core.ApplicationService.Impl
         }
         public List<Owner> GetAllOwners()
         {
-            return _ownerRepo.GetAllOwners().ToList();
+            List<Owner> allOwners = _ownerRepo.GetAllOwners().ToList();
+            if (allOwners != null)
+            {
+                return allOwners;
+            }
+            else
+            {
+                throw new Exception("No data could be found.");
+            }
+
         }
 
         public List<Owner> SearchForOwner(int toSearchInt, string searchValue)
