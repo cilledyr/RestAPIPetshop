@@ -68,7 +68,15 @@ namespace Petshop.Core.ApplicationService.Impl
 
         public List<PetType> FindPetTypeByName(string name)
         {
-            return _petTypeRepo.FindPetTypeByName(name);
+            List<PetType> thePetTypes = _petTypeRepo.FindPetTypeByName(name);
+            if(thePetTypes.Count <1)
+            {
+                throw new Exception(message: "Could not find any pettypes of that name.");
+            }
+            else
+            {
+                return thePetTypes;
+            }
         }
 
         public List<PetType> GetALlPetTypes()
@@ -83,6 +91,31 @@ namespace Petshop.Core.ApplicationService.Impl
                 throw new Exception("No data could be found.");
             }
 
+        }
+
+        public List<PetType> SearchPetType(FilterModel filter)
+        {
+            string searchTerm = filter.SearchTerm.ToLower();
+            string searchValue = filter.SearchValue;
+            switch(searchTerm)
+            {
+                case "id":
+                    List<PetType> thePetTypes;
+                    int theSearchId;
+                    if(int.TryParse(searchValue, out theSearchId) || theSearchId == 0)
+                    {
+                        thePetTypes = new List<PetType> { FindPetTypeById(theSearchId) };
+                        return thePetTypes;
+                    }
+                    else
+                    {
+                        throw new Exception(message: "You have not entered a valid id.");
+                    }
+                case "name":
+                    return FindPetTypeByName(searchValue);
+                default:
+                    throw new Exception(message: "Could not find that search term");
+            }
         }
 
         public PetType UpdatePetType(PetType theUpdatedType)

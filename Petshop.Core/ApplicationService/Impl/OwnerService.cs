@@ -79,21 +79,23 @@ namespace Petshop.Core.ApplicationService.Impl
 
         }
 
-        public List<Owner> SearchForOwner(int toSearchInt, string searchValue)
+        public List<Owner> SearchForOwner(FilterModel filter)
         {
-            switch (toSearchInt)
+            string searchValue = filter.SearchValue;
+            string searchTerm = filter.SearchTerm.ToLower();
+            switch (searchTerm)
             {
-                case 1:
+                case "name":
                     return _ownerRepo.FindOwnerByName(searchValue).ToList();
-                case 2:
+                case "address":
                     return _ownerRepo.FindOwnerByAddress(searchValue).ToList();
-                case 3:
+                case "phonenr":
                     return _ownerRepo.FindOwnerByPhonenr(searchValue).ToList();
 
-                case 4:
+                case "email":
                     return _ownerRepo.FindOwnerByEmail(searchValue).ToList();
 
-                case 5:
+                case "id":
                     int searchId;
                     if (int.TryParse(searchValue, out searchId))
                     {
@@ -104,7 +106,7 @@ namespace Petshop.Core.ApplicationService.Impl
                         throw new InvalidDataException(message: "You have not given me a Nr to search the Id's for.");
                     }
                 default:
-                    throw new InvalidDataException(message: "Something unexpected went wrong.");
+                    throw new InvalidDataException(message: "I can't recognize that property to search for.");
             }
         }
         public Owner UpdateOwner(int updatedId, int toUpdateInt, string updateValue)

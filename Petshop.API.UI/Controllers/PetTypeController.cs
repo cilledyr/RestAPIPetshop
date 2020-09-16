@@ -20,15 +20,36 @@ namespace Petshop.RestAPI.UI.Controllers
         }
         // GET: api/<PetTypeController>
         [HttpGet]
-        public ActionResult<List<PetType>> Get()
+        public ActionResult<List<PetType>> Get([FromQuery] FilterModel filter)
         {
-            try
+            if (string.IsNullOrEmpty(filter.SearchTerm) && string.IsNullOrEmpty(filter.SearchValue))
             {
-                return Ok(_petTypeService.GetALlPetTypes());
+                try
+                {
+                    return Ok(_petTypeService.GetALlPetTypes());
+                }
+                catch (Exception e)
+                {
+                    return NotFound(e.Message);
+                }
             }
-            catch (Exception e)
+            else
             {
-                return NotFound(e.Message);
+                if (string.IsNullOrEmpty(filter.SearchTerm) || string.IsNullOrEmpty(filter.SearchValue))
+                {
+                    return BadRequest("You need to enter both a SearchTerm and a SearchValue");
+                }
+                else
+                {
+                    try
+                    {
+                        return Ok(_petTypeService.SearchPetType(filter));
+                    }
+                    catch (Exception e)
+                    {
+                        return NotFound(e.Message);
+                    }
+                }
             }
         }
 

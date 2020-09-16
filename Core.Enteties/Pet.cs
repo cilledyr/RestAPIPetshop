@@ -9,17 +9,7 @@ namespace Petshop.Core.Enteties
     {
         public int PetId { get; set; }
         public string PetName { get; set; }
-       /* public enum Species
-        {
-            Dog,
-            Cat,
-            Fish,
-            Horse,
-            Hamster,
-            Gerbil,
-            Rabbit
-        }
-        public Species PetSpecies { get; set; }*/
+
         public PetType PetType { get; set; }
 
         public DateTime PetBirthday { get; set; }

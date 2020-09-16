@@ -23,14 +23,13 @@ namespace Petshop.Core.ApplicationService.Impl
 
 
 
-        public Pet AddNewPet(string thePetName, PetType theNewType, string theColour, DateTime theSelectedBirthday, DateTime theSelectedPurchaseDate, string thePreviousOwner, double thePetPrice, int theOwnerId)
+        public Pet AddNewPet(Pet theNewPet)
         {
-            Pet theNewPet = new Pet();
-            theNewPet.PetName = thePetName;
+            
             List<PetType> theType = null;
-            if(theNewType.PetTypeId != 0)
+            if(theNewPet.PetType.PetTypeId != 0)
             {
-                theType = _petTypeRepo.FindPetTypeById(theNewType.PetTypeId);
+                theType = _petTypeRepo.FindPetTypeById(theNewPet.PetType.PetTypeId);
                 if(theType.Count != 1)
                 {
                     throw new Exception("Sorry can't find that type.");
@@ -38,7 +37,7 @@ namespace Petshop.Core.ApplicationService.Impl
             }
             else
             {
-                theType[0] = _petTypeRepo.AddNewPetType(theNewType);
+                theType[0] = _petTypeRepo.AddNewPetType(theNewPet.PetType);
             }
             
             if(theType.Count != 1)
@@ -49,12 +48,17 @@ namespace Petshop.Core.ApplicationService.Impl
             {
                 theNewPet.PetType = theType[0];
             }
-            theNewPet.PetColor = theColour;
-            theNewPet.PetBirthday = theSelectedBirthday;
-            theNewPet.PetSoldDate = theSelectedPurchaseDate;
-            theNewPet.PetPreviousOwner = thePreviousOwner;
-            theNewPet.PetPrice = thePetPrice;
-            List<Owner> theOwners = _ownerRepo.FindOwner(theOwnerId);
+
+            List<Owner> theOwners = null;
+            if (theNewPet.PetOwner.OwnerId == 0)
+            {
+                theOwners[0] = _ownerRepo.AddNewOwner(theNewPet.PetOwner);
+            }
+            else
+            {
+                theOwners = _ownerRepo.FindOwnerByID(theNewPet.PetOwner.OwnerId);
+            }
+
             if(theOwners.Count != 1)
             {
                 throw new Exception(message: "Could not find the right owner");
@@ -124,23 +128,25 @@ namespace Petshop.Core.ApplicationService.Impl
 
 
 
-        public List<Pet> SearchForPet(int toSearchInt, string searchValue)
+        public List<Pet> SearchForPet(FilterModel filter)
         {
-            switch (toSearchInt)
+            string searchValue = filter.SearchValue;
+            string toSearchString = filter.SearchTerm.ToLower();
+            switch (toSearchString)
             {
-                case 1:
+                case "name":
                     return _petRepo.FindPetsByName(searchValue).ToList();
-                case 2:
+                case "color":
                     return _petRepo.FindPetsByColor(searchValue).ToList();
-                case 3:
+                case "type":
                     int theSearch;
                     List<PetType> thePetType = null;
-                    if (int.TryParse(searchValue, out theSearch) && theSearch >= 1 && theSearch <= 7)
+                    if (int.TryParse(searchValue, out theSearch) && theSearch != 0)
                     {
                         thePetType = _petTypeRepo.FindPetTypeById(theSearch);
-                        if(thePetType.Count != 1 )
+                        if(thePetType.Count < 1 )
                         {
-                            throw new Exception(message: "Sorry could not find that PetType.");
+                            throw new Exception(message: "Sorry could not find id of that PetType.");
                         }
                         else
                         {
@@ -153,7 +159,7 @@ namespace Petshop.Core.ApplicationService.Impl
                         thePetType = _petTypeRepo.FindPetTypeByName(searchValue);
                         if (thePetType.Count != 1)
                         {
-                            throw new Exception(message: "Sorry could not find that PetType.");
+                            throw new Exception(message: "Sorry could not find name of that PetType.");
                         }
                         else
                         {
@@ -161,7 +167,7 @@ namespace Petshop.Core.ApplicationService.Impl
                         }
                     }
 
-                case 4:
+                case "birthday":
                     DateTime theDateValue = DateTime.Now;
                     if (DateTime.TryParse(searchValue, out theDateValue))
                     {
@@ -172,7 +178,7 @@ namespace Petshop.Core.ApplicationService.Impl
                         throw new InvalidDataException(message: "You have not entered a valid date.");
                     }
 
-                case 5:
+                case "solddate":
                     DateTime theSoldValue = DateTime.Now;
                     if (DateTime.TryParse(searchValue, out theSoldValue))
                     {
@@ -182,10 +188,10 @@ namespace Petshop.Core.ApplicationService.Impl
                     {
                         throw new InvalidDataException(message: "You have not entered a valid date.");
                     }
-                case 6:
+                case "previousowner":
                     return _petRepo.FindPetsByPreviousOwner(searchValue).ToList();
 
-                case 7:
+                case "price":
                     long thePriceValue = 0;
                     if (long.TryParse(searchValue, out thePriceValue))
                     {
@@ -195,7 +201,7 @@ namespace Petshop.Core.ApplicationService.Impl
                     {
                         throw new InvalidDataException(message: "You have not entered a valid price.");
                     }
-                case 9:
+                case "id":
                     int searchId;
                     if(int.TryParse(searchValue, out searchId))
                     {
@@ -208,7 +214,7 @@ namespace Petshop.Core.ApplicationService.Impl
                     
 
                 default:
-                    throw new InvalidDataException(message: "Something unexpected went wrong.");
+                    throw new InvalidDataException(message: "I don't have that property to seach for.");
             }
         }
 

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Logging;
 using Petshop.Core.ApplicationService;
 using Petshop.Core.Enteties;
@@ -24,16 +25,39 @@ namespace Petshop.RestAPI.UI.Controllers
 
 
         [HttpGet]
-        public ActionResult<IEnumerable<Pet>> Get()
+        public ActionResult<IEnumerable<Pet>> Get([FromQuery] FilterModel filter)
         {
-            try
+            if(string.IsNullOrEmpty(filter.SearchTerm) && string.IsNullOrEmpty(filter.SearchValue))
             {
-                return Ok(_petService.GetAllPets());
+                try
+                {
+                    return Ok(_petService.GetAllPets());
+                }
+                catch (Exception e)
+                {
+                    return NotFound(e.Message);
+                }
             }
-            catch(Exception e)
+            else
             {
-                return NotFound(e.Message);
+                if(string.IsNullOrEmpty(filter.SearchTerm) || string.IsNullOrEmpty(filter.SearchValue))
+                {
+                    return BadRequest("You need to enter both a SearchTerm and a SearchValue");
+                }
+                else
+                {
+                    try
+                    {
+                        return Ok(_petService.SearchForPet(filter));
+                    }
+                    catch (Exception e)
+                    {
+                        return NotFound(e.Message);
+                    }
+                }
+                
             }
+            
         }
 
         [HttpGet("{petId}")]
@@ -41,7 +65,7 @@ namespace Petshop.RestAPI.UI.Controllers
         { 
             try
             {
-                return _petService.FindPetByID(petId);
+                return Ok(_petService.FindPetByID(petId));
             }
             catch(Exception e)
             {
@@ -57,27 +81,32 @@ namespace Petshop.RestAPI.UI.Controllers
             {
                 return BadRequest("You have not entered all the required Pet data");
             }
+            PetType thePetType = thePet.PetType;
+            if(thePetType.PetTypeId == 0)
+            {
+                if(string.IsNullOrEmpty(thePetType.PetTypeName))
+                {
+                    return BadRequest("You have not entered all the information for a new PetType, please enter an id of an existing type, or a name for a new one.");
+                }
+            }
 
             Owner theOwner = thePet.PetOwner;
             if(theOwner.OwnerId == 0)
             {
                 if (string.IsNullOrEmpty(theOwner.OwnerFirstName) || string.IsNullOrEmpty(theOwner.OwnerLastName) || string.IsNullOrEmpty(theOwner.OwnerAddress) || string.IsNullOrEmpty(theOwner.OwnerPhoneNr) || string.IsNullOrEmpty(theOwner.OwnerEmail))
                 {
-                    return BadRequest("You have not entered all the required Owner data.");
+                    return BadRequest("You have not entered all the required Owner data, please enter the id of an existing owner, or all the info of a new one.");
                 }
-                theOwner = _ownerService.AddNewOwner(theOwner);
             }
-            else
+            try
             {
-                theOwner = _ownerService.FindOwnerByID(theOwner.OwnerId);
-                if (theOwner == null)
-                {
-                    return NotFound("I could not find an owner with that Id");
-                }
+                return Created("Successfully created the following pet: ", _petService.AddNewPet(thePet));
+            }
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
             }
             
-
-            return Created("Successfully created the following pet: ", _petService.AddNewPet(thePet.PetName, thePet.PetType , thePet.PetColor, thePet.PetBirthday, thePet.PetSoldDate, thePet.PetPreviousOwner, thePet.PetPrice, theOwner.OwnerId));
         }
 
         public class updatePetObj
@@ -96,7 +125,7 @@ namespace Petshop.RestAPI.UI.Controllers
             }
             try
             {
-                return Ok(_petService.UpdatePet(id, thePetObj.updateParam.Value, thePetObj.updateData));
+                return Accepted("You successfully updated: ", _petService.UpdatePet(id, thePetObj.updateParam.Value, thePetObj.updateData));
                 
             }
             catch(Exception e)
@@ -125,7 +154,7 @@ namespace Petshop.RestAPI.UI.Controllers
 
             try
             {
-                return Ok(_petService.UpdatePet(theUpdatedPet));
+                return Accepted("You successfully updat4ed: ", _petService.UpdatePet(theUpdatedPet));
             }
             catch(Exception e)
             {
@@ -142,7 +171,7 @@ namespace Petshop.RestAPI.UI.Controllers
             {
                 Pet PetToDelete = _petService.FindPetByID(id);
                 _petService.DeletePetByID(id);
-                return Ok(PetToDelete.PetName + " pet has been deleted.");
+                return Accepted(PetToDelete.PetName + " pet has been deleted.");
             }
             catch(Exception e)
             {

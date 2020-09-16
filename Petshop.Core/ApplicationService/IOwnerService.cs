@@ -8,7 +8,7 @@ namespace Petshop.Core.ApplicationService
     public interface IOwnerService
     {
         public List<Owner> GetAllOwners();
-        public List<Owner> SearchForOwner(int toSearchInt, string searchValue);
+        public List<Owner> SearchForOwner(FilterModel filter);
         public Owner AddNewOwner(Owner theNewOwner);
         public List<Owner> FindOwnersByName(string theName);
         public Owner FindOwnerByID(int theId);

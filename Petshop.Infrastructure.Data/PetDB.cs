@@ -182,7 +182,7 @@ namespace Petshop.Infrastructure.Data
             {
                 thePetTypeCount++;
             }
-            theNewPetType.PetTypeId = thePetCount;
+            theNewPetType.PetTypeId = thePetTypeCount;
             thePetTypeCount++;
             List<PetType> newPetType = new List<PetType> { theNewPetType };
             if(allThePetTypes == null)
