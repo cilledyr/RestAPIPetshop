@@ -41,7 +41,7 @@ namespace Petshop.RestAPI.UI.Controllers
             {
                 if(string.IsNullOrEmpty(filter.SearchTerm) || string.IsNullOrEmpty(filter.SearchValue))
                 {
-                    return BadRequest("You need to enter both a SearchTerm and a SearchValue");
+                    return StatusCode(500, "You need to enter both a SearchTerm and a SearchValue");
                 }
                 else
                 {
@@ -77,27 +77,34 @@ namespace Petshop.RestAPI.UI.Controllers
         {
             if(string.IsNullOrEmpty(theOwner.OwnerFirstName) || string.IsNullOrEmpty(theOwner.OwnerLastName) || string.IsNullOrEmpty(theOwner.OwnerAddress) || string.IsNullOrEmpty(theOwner.OwnerPhoneNr) || string.IsNullOrEmpty(theOwner.OwnerEmail))
             {
-                return BadRequest("You have not entered all the needed data.");
+                return StatusCode(500, "You have not entered all the needed data.");
             }
-            return Created("Successfully created the following: ", _ownerService.AddNewOwner(theOwner));
+            try
+            {
+                return Created("Successfully created the following: ", _ownerService.AddNewOwner(theOwner));
+            }
+            catch(Exception e)
+            {
+                return StatusCode(500, e.Message);
+            }
         }
 
         public class updateOwnerObj
         {
-            public int? updateParam { get; set; }
+            public int updateParam { get; set; }
             public string updateData { get; set; }
         }
         // PUT api/<OwnerController>/5
         [HttpPut("{id}")]
         public ActionResult<Owner> Put(int id, [FromBody] Owner theOwner)
         { 
-            if(id != theOwner.OwnerId)
+            if(id != theOwner.OwnerId || id == 0)
             {
-                return BadRequest("Your Id's need to match.");
+                return StatusCode(500, "Your Id's need to match, and may not be 0.");
             }
             if (string.IsNullOrEmpty(theOwner.OwnerFirstName) || string.IsNullOrEmpty(theOwner.OwnerLastName) || string.IsNullOrEmpty(theOwner.OwnerAddress) || string.IsNullOrEmpty(theOwner.OwnerPhoneNr) || string.IsNullOrEmpty(theOwner.OwnerEmail))
             {
-                return BadRequest("You have not entered all the needed data.");
+                return StatusCode(500, "You have not entered all the needed data.");
             }
             try
             {
@@ -105,7 +112,7 @@ namespace Petshop.RestAPI.UI.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return NotFound( e.Message);
             }
         }
         // PUT api/<OwnerController>/5/param
@@ -114,11 +121,11 @@ namespace Petshop.RestAPI.UI.Controllers
         {
             try
             {
-                return _ownerService.UpdateOwner(id, theOwnerObj.updateParam.Value, theOwnerObj.updateData);
+                return _ownerService.UpdateOwner(id, theOwnerObj.updateParam, theOwnerObj.updateData);
             }
             catch(Exception e)
             {
-                return BadRequest(e.Message);
+                return StatusCode(500, e.Message);
             }
         }
 

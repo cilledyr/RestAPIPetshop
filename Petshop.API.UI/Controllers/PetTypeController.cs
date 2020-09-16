@@ -30,14 +30,14 @@ namespace Petshop.RestAPI.UI.Controllers
                 }
                 catch (Exception e)
                 {
-                    return NotFound(e.Message);
+                    return StatusCode(500, e.Message);
                 }
             }
             else
             {
                 if (string.IsNullOrEmpty(filter.SearchTerm) || string.IsNullOrEmpty(filter.SearchValue))
                 {
-                    return BadRequest("You need to enter both a SearchTerm and a SearchValue");
+                    return StatusCode(500, "You need to enter both a SearchTerm and a SearchValue");
                 }
                 else
                 {
@@ -47,7 +47,7 @@ namespace Petshop.RestAPI.UI.Controllers
                     }
                     catch (Exception e)
                     {
-                        return NotFound(e.Message);
+                        return NotFound( e.Message);
                     }
                 }
             }
@@ -73,7 +73,7 @@ namespace Petshop.RestAPI.UI.Controllers
         {
             if (string.IsNullOrEmpty(theNewType.PetTypeName))
             {
-                return BadRequest("You need to enter a name to create a new Type.");
+                return StatusCode(500, "You need to enter a name to create a new Type.");
             }
             else
             {
@@ -83,7 +83,7 @@ namespace Petshop.RestAPI.UI.Controllers
                 }
                 catch (Exception e)
                 {
-                    return BadRequest(e.Message);
+                    return StatusCode(500, e.Message);
                 }
             }
             
@@ -93,13 +93,13 @@ namespace Petshop.RestAPI.UI.Controllers
         [HttpPut("{id}")]
         public ActionResult<PetType> Put(int id, [FromBody] PetType theUpdatedPetType)
         {
-            if(id != theUpdatedPetType.PetTypeId)
+            if(id != theUpdatedPetType.PetTypeId || id == 0)
             {
-                return BadRequest("The Id's must match");
+                return StatusCode(500, "The Id's must match, and may not be 0.");
             }
             else if(string.IsNullOrEmpty(theUpdatedPetType.PetTypeName))
             {
-                return BadRequest("You need to enter a name for the new type.");
+                return StatusCode(500, "You need to enter a name for the new type.");
             }
             else
             {
@@ -109,7 +109,7 @@ namespace Petshop.RestAPI.UI.Controllers
                 }
                 catch (Exception e)
                 {
-                    return BadRequest(e.Message);
+                    return NotFound( e.Message);
                 }
             }
             
