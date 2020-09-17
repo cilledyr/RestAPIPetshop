@@ -253,11 +253,13 @@ namespace Petshop.Core.ApplicationService.Impl
 
 
         //Updates pet, for type and owner, if Id is set to 0, a new one wil be created from the entered values. From values entered, instead of a whole pet.
-        public Pet UpdatePet(int updatePetId, int toUpdateInt, string updateValue)
+        public Pet UpdatePet(int updatePetId, UpdateModel update)
         {
+            int updateParam = update.UpdateParam.Value;
+            string updateValue = update.UpdateValue;
             Pet updatedPet = FindPetByID(updatePetId);
 
-            switch (toUpdateInt)
+            switch (updateParam)
             {
                 case 1:
                     return _petRepo.UpdateNameOfPet(updatedPet, updateValue);
@@ -347,7 +349,7 @@ namespace Petshop.Core.ApplicationService.Impl
                     throw new InvalidDataException(message: "Something unexpected went wrong.");
             }
         }
-        //Updates pet, for type and owner, if Id is set to 0, a new one wil be created from the entered values. Takes a whole pet.
+        //Updates pet, for type and owner, if Id is set to 0, a new one wil be created from the entered values. Takes a whole pet, returns the upated pet.
         public Pet UpdatePet(Pet thePet)
         {
             List<Pet> thePets = _petRepo.FindPetByID(thePet.PetId);

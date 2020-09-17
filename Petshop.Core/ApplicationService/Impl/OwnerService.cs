@@ -109,9 +109,10 @@ namespace Petshop.Core.ApplicationService.Impl
                     throw new InvalidDataException(message: "I can't recognize that property to search for.");
             }
         }
-        public Owner UpdateOwner(int updatedId, int toUpdateInt, string updateValue)
-        { 
-
+        public Owner UpdateOwner(int updatedId, UpdateModel update)
+        {
+            int updateParam = update.UpdateParam.Value;
+            string updateValue = update.UpdateValue;
             Owner updatedOwner = null;
             List<Owner> theOwners = _ownerRepo.FindOwner(updatedId);
             if(theOwners.Count != 1)
@@ -123,7 +124,7 @@ namespace Petshop.Core.ApplicationService.Impl
                 updatedOwner = theOwners[0];
             }
 
-            switch (toUpdateInt)
+            switch (updateParam)
             {
                 case 1:
                     return _ownerRepo.UpdateFirstNameOfOwner(updatedOwner, updateValue);

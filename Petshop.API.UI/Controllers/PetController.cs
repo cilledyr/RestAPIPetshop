@@ -109,23 +109,17 @@ namespace Petshop.RestAPI.UI.Controllers
             
         }
 
-        public class updatePetObj
-        {
-            public  int? updateParam { get; set; }
-            public string updateData { get; set; }
-        }
-
         [HttpPut("{id}/param")]
         [ActionName("UpdatePetParam")]
-        public ActionResult<Pet> Put(int id, [FromBody] updatePetObj thePetObj)
+        public ActionResult<Pet> Put(int id, [FromBody] UpdateModel update)
         {
-            if(thePetObj.updateParam == null || string.IsNullOrEmpty(thePetObj.updateData))
+            if(update.UpdateParam == null || string.IsNullOrEmpty(update.UpdateValue))
             {
                 return StatusCode(500, "You have not entered all the correct data.");
             }
             try
             {
-                return Accepted("You successfully updated: ", _petService.UpdatePet(id, thePetObj.updateParam.Value, thePetObj.updateData));
+                return Accepted("You successfully updated: ", _petService.UpdatePet(id, update));
                 
             }
             catch(Exception e)

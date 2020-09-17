@@ -89,11 +89,6 @@ namespace Petshop.RestAPI.UI.Controllers
             }
         }
 
-        public class updateOwnerObj
-        {
-            public int updateParam { get; set; }
-            public string updateData { get; set; }
-        }
         // PUT api/<OwnerController>/5
         [HttpPut("{id}")]
         public ActionResult<Owner> Put(int id, [FromBody] Owner theOwner)
@@ -117,11 +112,15 @@ namespace Petshop.RestAPI.UI.Controllers
         }
         // PUT api/<OwnerController>/5/param
         [HttpPut("{id}/param")]
-        public ActionResult<Owner> Put(int id, [FromBody] updateOwnerObj theOwnerObj)
+        public ActionResult<Owner> Put(int id, [FromBody] UpdateModel update)
         {
+            if (update.UpdateParam == null || string.IsNullOrEmpty(update.UpdateValue))
+            {
+                return StatusCode(500, "You have not entered all the correct data.");
+            }
             try
             {
-                return _ownerService.UpdateOwner(id, theOwnerObj.updateParam, theOwnerObj.updateData);
+                return _ownerService.UpdateOwner(id, update);
             }
             catch(Exception e)
             {
