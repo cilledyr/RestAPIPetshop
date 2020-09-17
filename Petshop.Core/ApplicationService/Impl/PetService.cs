@@ -22,7 +22,7 @@ namespace Petshop.Core.ApplicationService.Impl
         }
 
 
-
+        // Adds a new pet, Owner and Type are added unless their ID is given, in which case they are found by Id.
         public Pet AddNewPet(Pet theNewPet)
         {
             
@@ -127,7 +127,7 @@ namespace Petshop.Core.ApplicationService.Impl
         }
 
 
-
+        //Searches for pets, for owner and type both id, and name are valid searches.
         public List<Pet> SearchForPet(FilterModel filter)
         {
             string searchValue = filter.SearchValue;
@@ -191,6 +191,39 @@ namespace Petshop.Core.ApplicationService.Impl
                 case "previousowner":
                     return _petRepo.FindPetsByPreviousOwner(searchValue).ToList();
 
+                case "owner":
+                    int theSearchForOwner;
+                    List<Owner> thePetOwner = null;
+                    if (int.TryParse(searchValue, out theSearchForOwner) && theSearchForOwner != 0)
+                    {
+                        thePetOwner = _ownerRepo.FindOwnerByID(theSearchForOwner);
+                        if (thePetOwner.Count < 1)
+                        {
+                            throw new Exception(message: "Sorry could not find id of that PetType.");
+                        }
+                        else
+                        {
+                            return _ownerRepo.FindAllPetsByOwner(thePetOwner[0]);
+                        }
+
+                    }
+                    else
+                    {
+                        thePetOwner = _ownerRepo.FindOwnerByName(searchValue).ToList();
+                        if (thePetOwner.Count < 1)
+                        {
+                            throw new Exception(message: "Sorry could not find name of that PetType.");
+                        }
+                        else
+                        {
+                            List<Pet> allPetsByTheOwners = null;
+                            foreach (var owner in thePetOwner)
+                            {
+                                allPetsByTheOwners.Concat(_ownerRepo.FindAllPetsByOwner(owner));
+                            }
+                            return allPetsByTheOwners;
+                        }
+                    }
                 case "price":
                     long thePriceValue = 0;
                     if (long.TryParse(searchValue, out thePriceValue))
@@ -219,7 +252,7 @@ namespace Petshop.Core.ApplicationService.Impl
         }
 
 
-
+        //Updates pet, for type and owner, if Id is set to 0, a new one wil be created from the entered values. From values entered, instead of a whole pet.
         public Pet UpdatePet(int updatePetId, int toUpdateInt, string updateValue)
         {
             Pet updatedPet = FindPetByID(updatePetId);
@@ -314,7 +347,7 @@ namespace Petshop.Core.ApplicationService.Impl
                     throw new InvalidDataException(message: "Something unexpected went wrong.");
             }
         }
-
+        //Updates pet, for type and owner, if Id is set to 0, a new one wil be created from the entered values. Takes a whole pet.
         public Pet UpdatePet(Pet thePet)
         {
             List<Pet> thePets = _petRepo.FindPetByID(thePet.PetId);
