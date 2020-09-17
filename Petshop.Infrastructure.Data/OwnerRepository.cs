@@ -17,7 +17,7 @@ namespace Petshop.Infrastructure.Data
 
         public IEnumerable<Owner> FindOwnerByName(string searchValue)
         {
-            IEnumerable<Owner> ownerByName = PetDB.allTheOwners.Where(owner => owner.OwnerFirstName.Contains(searchValue) || owner.OwnerLastName.Contains(searchValue));
+            IEnumerable<Owner> ownerByName = PetDB.allTheOwners.Where(owner => owner.OwnerFirstName.ToLower().Contains(searchValue.ToLower()) || owner.OwnerLastName.ToLower().Contains(searchValue.ToLower()));
             return ownerByName;
         }
 

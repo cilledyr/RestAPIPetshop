@@ -219,7 +219,14 @@ namespace Petshop.Core.ApplicationService.Impl
                             List<Pet> allPetsByTheOwners = null;
                             foreach (var owner in thePetOwner)
                             {
-                                allPetsByTheOwners.Concat(_ownerRepo.FindAllPetsByOwner(owner));
+                                if(allPetsByTheOwners == null)
+                                {
+                                    allPetsByTheOwners = _ownerRepo.FindAllPetsByOwner(owner);
+                                }
+                                else
+                                {
+                                    allPetsByTheOwners.Concat(_ownerRepo.FindAllPetsByOwner(owner));
+                                }
                             }
                             return allPetsByTheOwners;
                         }
@@ -236,13 +243,13 @@ namespace Petshop.Core.ApplicationService.Impl
                     }
                 case "id":
                     int searchId;
-                    if(int.TryParse(searchValue, out searchId))
+                    if(int.TryParse(searchValue, out searchId) && searchId!=0)
                     {
                         return _petRepo.FindPetByID(searchId);
                     }
                     else
                     {
-                        throw new InvalidDataException(message: "You have not given me a Nr to search the Id's for.");
+                        throw new InvalidDataException(message: "Id out of bounds.");
                     }
                     
 

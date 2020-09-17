@@ -48,7 +48,16 @@ namespace Petshop.RestAPI.UI.Controllers
                 {
                     try
                     {
-                        return Ok(_petService.SearchForPet(filter));
+                        List<Pet> allPetsFound = _petService.SearchForPet(filter);
+                        if(allPetsFound.Count <1)
+                        {
+                            return NotFound("No pets with those parameters could be found.");
+                        }
+                        else
+                        {
+                            return Ok(allPetsFound);
+                        }
+                        
                     }
                     catch (Exception e)
                     {

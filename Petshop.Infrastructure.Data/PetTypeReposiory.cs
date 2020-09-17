@@ -33,7 +33,7 @@ namespace Petshop.Infrastructure.Data
 
         public List<PetType> FindPetTypeByName(string name)
         {
-            return PetDB.allThePetTypes.Where(petType => petType.PetTypeName.Contains(name)).ToList();
+            return PetDB.allThePetTypes.Where(petType => petType.PetTypeName.ToLower().Contains(name.ToLower())).ToList();
         }
 
 

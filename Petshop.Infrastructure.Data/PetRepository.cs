@@ -28,7 +28,7 @@ namespace Petshop.Infrastructure.Data
 
         public IEnumerable<Pet> FindPetsByName(string theName)
         {
-            IEnumerable<Pet> petsByName = PetDB.allThePets.Where(pet => pet.PetName.Contains(theName));
+            IEnumerable<Pet> petsByName = PetDB.allThePets.Where(pet => pet.PetName.ToLower().Contains(theName.ToLower()));
             return petsByName;
         }
 
