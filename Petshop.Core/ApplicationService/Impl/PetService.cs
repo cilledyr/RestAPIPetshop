@@ -157,13 +157,25 @@ namespace Petshop.Core.ApplicationService.Impl
                     else
                     {
                         thePetType = _petTypeRepo.FindPetTypeByName(searchValue);
-                        if (thePetType.Count != 1)
+                        if (thePetType.Count <  1)
                         {
                             throw new Exception(message: "Sorry could not find name of that PetType.");
                         }
                         else
                         {
-                            return _petTypeRepo.FindAllPetsByType(thePetType[0]);
+                            List<Pet> allPetsByType = null;
+                            foreach (var petType in thePetType)
+                            {
+                                if(allPetsByType == null)
+                                {
+                                    allPetsByType = _petTypeRepo.FindAllPetsByType(petType);
+                                }
+                                else
+                                {
+                                    allPetsByType = allPetsByType.Concat(_petTypeRepo.FindAllPetsByType(petType)).ToList();
+                                }
+                            }
+                            return allPetsByType;
                         }
                     }
 
