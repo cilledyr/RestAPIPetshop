@@ -92,7 +92,7 @@ namespace Petshop.Core.ApplicationService.Impl
             List<Pet> thePets = _petRepo.FindPetByID(theNewId);
             if (thePets.Count != 1)
             {
-                throw new Exception(message: "I am sorry wrong amonut of pets found by ID.");
+                return null;
             }
             else
             {
@@ -109,15 +109,7 @@ namespace Petshop.Core.ApplicationService.Impl
 
         public List<Pet> GetAllPets()
         {
-            List<Pet> allPets = _petRepo.GetAllPets().ToList();
-            if (allPets != null)
-            {
-                return allPets;
-            }
-            else
-            {
-                throw new Exception(message: "No data could be found.");
-            }
+            return _petRepo.GetAllPets().ToList();
             
         }
 
@@ -277,96 +269,104 @@ namespace Petshop.Core.ApplicationService.Impl
             int updateParam = update.UpdateParam.Value;
             string updateValue = update.UpdateValue;
             Pet updatedPet = FindPetByID(updatePetId);
-
-            switch (updateParam)
+            if(updatedPet == null)
             {
-                case 1:
-                    return _petRepo.UpdateNameOfPet(updatedPet, updateValue);
-                case 2:
-                    return _petRepo.UpdateColorOfPet(updatedPet, updateValue);
-                case 3:
-                    int petTypeId;
-                    List<PetType> updatedType = null;
-                    if (int.TryParse(updateValue, out petTypeId))
-                    {
-                        updatedType = _petTypeRepo.FindPetTypeById(petTypeId);
-                    }
-                    else
-                    {
-                        updatedType = _petTypeRepo.FindPetTypeByName(updateValue);
-                    }
-                    if(updatedType.Count != 1)
-                    {
-                        throw new Exception("Can't find a PetType of that variety");
-                    }
-                    else
-                    {
-                        return _petRepo.UpdateTypeOfPet(updatedPet, updatedType[0]);
-                    }
-
-                case 4:
-                    DateTime theUpdateValue = DateTime.Now;
-                    if(DateTime.TryParse(updateValue, out theUpdateValue))
-                    {
-                        return _petRepo.UpdateBirthdayOfPet(updatedPet, theUpdateValue);
-                    }
-                    else
-                    {
-                        throw new InvalidDataException(message: "You have not entered a valid date.");
-                    }
-
-                case 5:
-                    DateTime theSoldUpdateValue = DateTime.Now;
-                    if (DateTime.TryParse(updateValue, out theSoldUpdateValue))
-                    {
-                        return _petRepo.UpdateSoldDateOfPet(updatedPet, theSoldUpdateValue);
-                    }
-                    else
-                    {
-                        throw new InvalidDataException(message: "You have not entered a valid date.");
-                    }
-                case 6:
-                    return _petRepo.UpdatePreviousOwnerOfPet(updatedPet, updateValue);
-                case 7:
-                    long thePriceValue = 0;
-                    if (long.TryParse(updateValue, out thePriceValue))
-                    {
-                        return _petRepo.UpdatePriceOfPet(updatedPet, thePriceValue);
-                    }
-                    else
-                    {
-                        throw new InvalidDataException(message: "You have not entered a valid price.");
-                    }
-                case 8:
-                    int id;
-                    if(int.TryParse(updateValue, out id))
-                    {
-                        List<Owner> allTheOwners = _ownerRepo.GetAllOwners().ToList();
-                        if(id != 0)
+                throw new Exception(message: "I am sorry could not find that pet to Update.");
+            }
+            else
+            {
+                switch (updateParam)
+                {
+                    case 1:
+                        return _petRepo.UpdateNameOfPet(updatedPet, updateValue);
+                    case 2:
+                        return _petRepo.UpdateColorOfPet(updatedPet, updateValue);
+                    case 3:
+                        int petTypeId;
+                        List<PetType> updatedType = null;
+                        if (int.TryParse(updateValue, out petTypeId))
                         {
-                            List<Owner> newOwners = _ownerRepo.FindOwner(id);
-                            if(newOwners.Count != 1 || newOwners[0] == null)
-                            {
-                                throw new Exception(message: "Could not find an owner with that Id.");
-                            }
-                            else
-                            {
-                                return _petRepo.UpdateOwnerOfPet(updatedPet, newOwners[0]);
-                            }
-                            
+                            updatedType = _petTypeRepo.FindPetTypeById(petTypeId);
                         }
                         else
                         {
-                            throw new InvalidDataException(message: "Id of owner out of Bounds.");
+                            updatedType = _petTypeRepo.FindPetTypeByName(updateValue);
                         }
-                    }
-                    else
-                    {
-                        throw new InvalidDataException(message: "You have not entered a valid id.");
-                    }
-                default:
-                    throw new InvalidDataException(message: "Something unexpected went wrong.");
+                        if (updatedType.Count != 1)
+                        {
+                            throw new Exception("Can't find a PetType of that variety");
+                        }
+                        else
+                        {
+                            return _petRepo.UpdateTypeOfPet(updatedPet, updatedType[0]);
+                        }
+
+                    case 4:
+                        DateTime theUpdateValue = DateTime.Now;
+                        if (DateTime.TryParse(updateValue, out theUpdateValue))
+                        {
+                            return _petRepo.UpdateBirthdayOfPet(updatedPet, theUpdateValue);
+                        }
+                        else
+                        {
+                            throw new InvalidDataException(message: "You have not entered a valid date.");
+                        }
+
+                    case 5:
+                        DateTime theSoldUpdateValue = DateTime.Now;
+                        if (DateTime.TryParse(updateValue, out theSoldUpdateValue))
+                        {
+                            return _petRepo.UpdateSoldDateOfPet(updatedPet, theSoldUpdateValue);
+                        }
+                        else
+                        {
+                            throw new InvalidDataException(message: "You have not entered a valid date.");
+                        }
+                    case 6:
+                        return _petRepo.UpdatePreviousOwnerOfPet(updatedPet, updateValue);
+                    case 7:
+                        long thePriceValue = 0;
+                        if (long.TryParse(updateValue, out thePriceValue))
+                        {
+                            return _petRepo.UpdatePriceOfPet(updatedPet, thePriceValue);
+                        }
+                        else
+                        {
+                            throw new InvalidDataException(message: "You have not entered a valid price.");
+                        }
+                    case 8:
+                        int id;
+                        if (int.TryParse(updateValue, out id))
+                        {
+                            List<Owner> allTheOwners = _ownerRepo.GetAllOwners().ToList();
+                            if (id != 0)
+                            {
+                                List<Owner> newOwners = _ownerRepo.FindOwner(id);
+                                if (newOwners.Count != 1 || newOwners[0] == null)
+                                {
+                                    throw new Exception(message: "Could not find an owner with that Id.");
+                                }
+                                else
+                                {
+                                    return _petRepo.UpdateOwnerOfPet(updatedPet, newOwners[0]);
+                                }
+
+                            }
+                            else
+                            {
+                                throw new InvalidDataException(message: "Id of owner out of Bounds.");
+                            }
+                        }
+                        else
+                        {
+                            throw new InvalidDataException(message: "You have not entered a valid id.");
+                        }
+                    default:
+                        throw new InvalidDataException(message: "I am sorry i do not have that parameter to update.");
+                }
             }
+
+            
         }
         //Updates pet, for type and owner, if Id is set to 0, a new one wil be created from the entered values. Takes a whole pet, returns the upated pet.
         public Pet UpdatePet(Pet thePet)
@@ -374,7 +374,7 @@ namespace Petshop.Core.ApplicationService.Impl
             List<Pet> thePets = _petRepo.FindPetByID(thePet.PetId);
             if (thePets.Count !=1 || thePets[0] == null)
             {
-                throw new Exception(message: "I am sorry wrong amount of pets found by ID.");
+                throw new Exception(message: "I am sorry could not find pet to update.");
             }
             else
             {

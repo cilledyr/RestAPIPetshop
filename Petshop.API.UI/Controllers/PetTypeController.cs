@@ -26,7 +26,15 @@ namespace Petshop.RestAPI.UI.Controllers
             {
                 try
                 {
-                    return Ok(_petTypeService.GetALlPetTypes());
+                    List<PetType> allTheTypes = _petTypeService.GetALlPetTypes();
+                    if(allTheTypes.Count <1)
+                    {
+                        return NotFound("I am sorry it seems there are no PetTypes.");
+                    }
+                    else
+                    {
+                        return Ok(allTheTypes);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -37,17 +45,25 @@ namespace Petshop.RestAPI.UI.Controllers
             {
                 if (string.IsNullOrEmpty(filter.SearchTerm) || string.IsNullOrEmpty(filter.SearchValue))
                 {
-                    return StatusCode(500, "You need to enter both a SearchTerm and a SearchValue");
+                    return BadRequest("You need to enter both a SearchTerm and a SearchValue");
                 }
                 else
                 {
                     try
                     {
-                        return Ok(_petTypeService.SearchPetType(filter));
+                        List<PetType> allTheTypes = _petTypeService.SearchPetType(filter);
+                        if(allTheTypes.Count < 1)
+                        {
+                            return NotFound("I am sorry could not find any petTypes with those parameters.");
+                        }
+                        else
+                        {
+                            return Ok(allTheTypes);
+                        }
                     }
                     catch (Exception e)
                     {
-                        return NotFound( e.Message);
+                        return StatusCode(500, e.Message);
                     }
                 }
             }
@@ -59,11 +75,19 @@ namespace Petshop.RestAPI.UI.Controllers
         {
             try
             {
-                return Ok(_petTypeService.FindPetTypeByIdWithPets(id));
+                PetType theType = _petTypeService.FindPetTypeByIdWithPets(id);
+                if(theType == null)
+                {
+                    return NotFound("I am sorry could not find a type with that Id.");
+                }
+                else
+                {
+                    return Ok(theType);
+                }
             }
             catch(Exception e)
             {
-                return NotFound(e.Message);
+                return StatusCode(500, e.Message);
             }
         }
 
@@ -73,7 +97,7 @@ namespace Petshop.RestAPI.UI.Controllers
         {
             if (string.IsNullOrEmpty(theNewType.PetTypeName))
             {
-                return StatusCode(500, "You need to enter a name to create a new Type.");
+                return BadRequest("You need to enter a name to create a new Type.");
             }
             else
             {
@@ -95,11 +119,11 @@ namespace Petshop.RestAPI.UI.Controllers
         {
             if(id != theUpdatedPetType.PetTypeId || id == 0)
             {
-                return StatusCode(500, "The Id's must match, and may not be 0.");
+                return BadRequest("The Id's must match, and may not be 0.");
             }
             else if(string.IsNullOrEmpty(theUpdatedPetType.PetTypeName))
             {
-                return StatusCode(500, "You need to enter a name for the new type.");
+                return BadRequest("You need to enter a name for the new type.");
             }
             else
             {
@@ -109,7 +133,7 @@ namespace Petshop.RestAPI.UI.Controllers
                 }
                 catch (Exception e)
                 {
-                    return NotFound( e.Message);
+                    return StatusCode(500, e.Message);
                 }
             }
             
@@ -126,7 +150,7 @@ namespace Petshop.RestAPI.UI.Controllers
             }
             catch(Exception e)
             {
-                return NotFound(e.Message);
+                return StatusCode(500, e.Message);
             }
         }
     }

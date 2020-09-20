@@ -37,7 +37,7 @@ namespace Petshop.Core.ApplicationService.Impl
             List<PetType> allthePetsWithID = _petTypeRepo.FindPetTypeById(id);
             if(allthePetsWithID.Count != 1)
             {
-                throw new Exception("COuld not find pet with that Id");
+                return null;
             }
             else
             {
@@ -81,15 +81,7 @@ namespace Petshop.Core.ApplicationService.Impl
 
         public List<PetType> GetALlPetTypes()
         {
-            List<PetType> allPetTypes = _petTypeRepo.GetAllPetTypes().ToList();
-            if (allPetTypes != null)
-            {
-                return allPetTypes;
-            }
-            else
-            {
-                throw new Exception("No data could be found.");
-            }
+            return _petTypeRepo.GetAllPetTypes().ToList();
 
         }
 

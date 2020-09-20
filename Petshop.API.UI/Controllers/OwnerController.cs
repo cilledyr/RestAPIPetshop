@@ -30,28 +30,45 @@ namespace Petshop.RestAPI.UI.Controllers
             {
                 try
                 {
-                    return Ok(_ownerService.GetAllOwners());
+                    List<Owner> alltheOwners = _ownerService.GetAllOwners();
+                    if(alltheOwners.Count < 1)
+                    {
+                        return NotFound("I am sorry, it seems there are no owners.");
+                    }
+                    else
+                    {
+                        return Ok(alltheOwners);
+                    }
+                    
                 }
                 catch (Exception e)
                 {
-                    return NotFound(e.Message);
+                    return StatusCode(500, e.Message);
                 }
             }
             else
             {
                 if(string.IsNullOrEmpty(filter.SearchTerm) || string.IsNullOrEmpty(filter.SearchValue))
                 {
-                    return StatusCode(500, "You need to enter both a SearchTerm and a SearchValue");
+                    return BadRequest("You need to enter both a SearchTerm and a SearchValue");
                 }
                 else
                 {
                     try
                     {
-                        return Ok(_ownerService.SearchForOwner(filter));
+                        List<Owner> allTheOwners = _ownerService.SearchForOwner(filter);
+                        if (allTheOwners.Count < 1)
+                        {
+                            return NotFound("I am sorry i could not find any owners with those parameters.");
+                        }
+                        else
+                        {
+                            return Ok(allTheOwners);
+                        }
                     }
                     catch(Exception e)
                     {
-                        return NotFound(e.Message);
+                        return StatusCode(500, e.Message);
                     }
                 }
             }
@@ -63,11 +80,19 @@ namespace Petshop.RestAPI.UI.Controllers
         {
             try
             {
-                return Ok(_ownerService.FindOwnerByID(id));
+                Owner theOwner = _ownerService.FindOwnerByID(id);
+                if(theOwner == null)
+                {
+                    return NotFound("I am sorry could not find an owner with that ID.");
+                }
+                else
+                {
+                    return Ok(theOwner);
+                }
             }
             catch(Exception e)
             {
-                return NotFound(e.Message);
+                return StatusCode(500, e.Message);
             }
         }
 
@@ -77,7 +102,7 @@ namespace Petshop.RestAPI.UI.Controllers
         {
             if(string.IsNullOrEmpty(theOwner.OwnerFirstName) || string.IsNullOrEmpty(theOwner.OwnerLastName) || string.IsNullOrEmpty(theOwner.OwnerAddress) || string.IsNullOrEmpty(theOwner.OwnerPhoneNr) || string.IsNullOrEmpty(theOwner.OwnerEmail))
             {
-                return StatusCode(500, "You have not entered all the needed data.");
+                return BadRequest("You have not entered all the needed data.");
             }
             try
             {
@@ -95,11 +120,11 @@ namespace Petshop.RestAPI.UI.Controllers
         { 
             if(id != theOwner.OwnerId || id == 0)
             {
-                return StatusCode(500, "Your Id's need to match, and may not be 0.");
+                return BadRequest("Your Id's need to match, and may not be 0.");
             }
             if (string.IsNullOrEmpty(theOwner.OwnerFirstName) || string.IsNullOrEmpty(theOwner.OwnerLastName) || string.IsNullOrEmpty(theOwner.OwnerAddress) || string.IsNullOrEmpty(theOwner.OwnerPhoneNr) || string.IsNullOrEmpty(theOwner.OwnerEmail))
             {
-                return StatusCode(500, "You have not entered all the needed data.");
+                return BadRequest("You have not entered all the needed data.");
             }
             try
             {
@@ -107,7 +132,7 @@ namespace Petshop.RestAPI.UI.Controllers
             }
             catch (Exception e)
             {
-                return NotFound( e.Message);
+                return StatusCode(500, e.Message);
             }
         }
         // PUT api/<OwnerController>/5/param
@@ -116,7 +141,7 @@ namespace Petshop.RestAPI.UI.Controllers
         {
             if (update.UpdateParam == null || string.IsNullOrEmpty(update.UpdateValue))
             {
-                return StatusCode(500, "You have not entered all the correct data.");
+                return BadRequest( "You have not entered all the correct data.");
             }
             try
             {
@@ -139,7 +164,7 @@ namespace Petshop.RestAPI.UI.Controllers
             }
             catch(Exception e)
             {
-                return NotFound(e.Message);
+                return StatusCode(500, e.Message);
             }
         }
     }

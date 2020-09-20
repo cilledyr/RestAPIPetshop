@@ -42,7 +42,7 @@ namespace Petshop.RestAPI.UI.Controllers
             {
                 if(string.IsNullOrEmpty(filter.SearchTerm) || string.IsNullOrEmpty(filter.SearchValue))
                 {
-                    return StatusCode(500,"You need to enter both a SearchTerm and a SearchValue");
+                    return BadRequest("You need to enter both a SearchTerm and a SearchValue");
                 }
                 else
                 {
@@ -74,11 +74,20 @@ namespace Petshop.RestAPI.UI.Controllers
         { 
             try
             {
-                return Ok(_petService.FindPetByID(petId));
+                Pet thePet = _petService.FindPetByID(petId);
+                if(thePet == null)
+                {
+                    return NotFound("I am sory i could not find that pet.");
+                }
+                else
+                {
+                    return Ok(thePet);
+                }
+                
             }
             catch(Exception e)
             {
-                return NotFound(e.Message);
+                return StatusCode(500, e.Message);
             }
             
         }
@@ -88,14 +97,14 @@ namespace Petshop.RestAPI.UI.Controllers
         {
             if (string.IsNullOrEmpty(thePet.PetName) || thePet.PetType == null|| string.IsNullOrEmpty(thePet.PetColor) || thePet.PetBirthday == null || thePet.PetSoldDate == null || string.IsNullOrEmpty(thePet.PetPreviousOwner) || thePet.PetOwner == null)
             {
-                return StatusCode(500, "You have not entered all the required Pet data");
+                return BadRequest("You have not entered all the required Pet data");
             }
             PetType thePetType = thePet.PetType;
             if(thePetType.PetTypeId == 0)
             {
                 if(string.IsNullOrEmpty(thePetType.PetTypeName))
                 {
-                    return StatusCode(500, "You have not entered all the information for a new PetType, please enter an id of an existing type, or a name for a new one.");
+                    return BadRequest("You have not entered all the information for a new PetType, please enter an id of an existing type, or a name for a new one.");
                 }
             }
 
@@ -104,7 +113,7 @@ namespace Petshop.RestAPI.UI.Controllers
             {
                 if (string.IsNullOrEmpty(theOwner.OwnerFirstName) || string.IsNullOrEmpty(theOwner.OwnerLastName) || string.IsNullOrEmpty(theOwner.OwnerAddress) || string.IsNullOrEmpty(theOwner.OwnerPhoneNr) || string.IsNullOrEmpty(theOwner.OwnerEmail))
                 {
-                    return StatusCode(500, "You have not entered all the required Owner data, please enter the id of an existing owner, or all the info of a new one.");
+                    return BadRequest("You have not entered all the required Owner data, please enter the id of an existing owner, or all the info of a new one.");
                 }
             }
             try
@@ -124,7 +133,7 @@ namespace Petshop.RestAPI.UI.Controllers
         {
             if(update.UpdateParam == null || string.IsNullOrEmpty(update.UpdateValue))
             {
-                return StatusCode(500, "You have not entered all the correct data.");
+                return BadRequest("You have not entered all the correct data.");
             }
             try
             {
@@ -133,7 +142,7 @@ namespace Petshop.RestAPI.UI.Controllers
             }
             catch(Exception e)
             {
-                return NotFound( e.Message);
+                return StatusCode(500, e.Message);
             }
 
             
@@ -146,13 +155,13 @@ namespace Petshop.RestAPI.UI.Controllers
         {
             if(theUpdatedPet.PetId != id || id == 0)
             {
-                return StatusCode(500, "The id's of the Pet must match, and may not be 0.");
+                return BadRequest("The id's of the Pet must match, and may not be 0.");
             }
             if (string.IsNullOrEmpty(theUpdatedPet.PetName) || theUpdatedPet.PetType == null || string.IsNullOrEmpty(theUpdatedPet.PetColor) ||
                 theUpdatedPet.PetBirthday == null || theUpdatedPet.PetSoldDate == null || string.IsNullOrEmpty(theUpdatedPet.PetPreviousOwner) || theUpdatedPet.PetOwner == null ||
                 theUpdatedPet.PetType == null || (theUpdatedPet.PetType.PetTypeId == 0 && string.IsNullOrEmpty(theUpdatedPet.PetType.PetTypeName)))
             {
-                return StatusCode(500, "You have not entered all the required Pet data");
+                return BadRequest("You have not entered all the required Pet data");
             }
 
             try
@@ -161,7 +170,7 @@ namespace Petshop.RestAPI.UI.Controllers
             }
             catch(Exception e)
             {
-                return NotFound(e.Message);
+                return StatusCode(500, e.Message);
             }
             
            
@@ -177,7 +186,7 @@ namespace Petshop.RestAPI.UI.Controllers
             }
             catch(Exception e)
             {
-                return NotFound(e.Message);
+                return StatusCode(500, e.Message);
             }
 
         }
