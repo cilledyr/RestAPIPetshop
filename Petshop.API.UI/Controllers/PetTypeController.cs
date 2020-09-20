@@ -20,6 +20,7 @@ namespace Petshop.RestAPI.UI.Controllers
         }
         // GET: api/<PetTypeController>
         [HttpGet]
+        ///Takes a FilterModel with SearchTerm and SearchValue
         public ActionResult<List<PetType>> Get([FromQuery] FilterModel filter)
         {
             if (string.IsNullOrEmpty(filter.SearchTerm) && string.IsNullOrEmpty(filter.SearchValue))
@@ -52,7 +53,7 @@ namespace Petshop.RestAPI.UI.Controllers
                     try
                     {
                         List<PetType> allTheTypes = _petTypeService.SearchPetType(filter);
-                        if(allTheTypes.Count < 1)
+                        if(allTheTypes.Count < 1 || allTheTypes == null)
                         {
                             return NotFound("I am sorry could not find any petTypes with those parameters.");
                         }

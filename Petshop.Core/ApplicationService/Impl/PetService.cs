@@ -37,7 +37,7 @@ namespace Petshop.Core.ApplicationService.Impl
             }
             else
             {
-                theType[0] = _petTypeRepo.AddNewPetType(theNewPet.PetType);
+                theType = new List<PetType> { _petTypeRepo.AddNewPetType(theNewPet.PetType) };
             }
             
             if(theType.Count != 1)
@@ -52,7 +52,7 @@ namespace Petshop.Core.ApplicationService.Impl
             List<Owner> theOwners = null;
             if (theNewPet.PetOwner.OwnerId == 0)
             {
-                theOwners[0] = _ownerRepo.AddNewOwner(theNewPet.PetOwner);
+                theOwners =  new List<Owner> { _ownerRepo.AddNewOwner(theNewPet.PetOwner) };
             }
             else
             {
@@ -201,7 +201,7 @@ namespace Petshop.Core.ApplicationService.Impl
                     if (int.TryParse(searchValue, out theSearchForOwner) && theSearchForOwner != 0)
                     {
                         thePetOwner = _ownerRepo.FindOwnerByID(theSearchForOwner);
-                        if (thePetOwner.Count < 1)
+                        if (thePetOwner.Count < 1 || thePetOwner == null)
                         {
                             throw new Exception(message: "Sorry could not find id of that PetType.");
                         }
@@ -214,9 +214,9 @@ namespace Petshop.Core.ApplicationService.Impl
                     else
                     {
                         thePetOwner = _ownerRepo.FindOwnerByName(searchValue).ToList();
-                        if (thePetOwner.Count < 1)
+                        if (thePetOwner.Count < 1 || thePetOwner == null)
                         {
-                            throw new Exception(message: "Sorry could not find name of that PetType.");
+                            throw new Exception(message: "Sorry could not find name of that Owner.");
                         }
                         else
                         {
@@ -229,7 +229,7 @@ namespace Petshop.Core.ApplicationService.Impl
                                 }
                                 else
                                 {
-                                    allPetsByTheOwners.Concat(_ownerRepo.FindAllPetsByOwner(owner));
+                                    allPetsByTheOwners = allPetsByTheOwners.Concat(_ownerRepo.FindAllPetsByOwner(owner)).ToList();
                                 }
                             }
                             return allPetsByTheOwners;
@@ -385,7 +385,7 @@ namespace Petshop.Core.ApplicationService.Impl
                 else
                 {
                     List<Owner> theOwners = _ownerRepo.FindOwner(thePet.PetOwner.OwnerId);
-                    if(theOwners.Count != 1 || theOwners[0] == null)
+                    if(theOwners.Count != 1 || theOwners == null)
                     {
                         throw new Exception(message: "Sorry wrong number of owners found with that ID.");
                     }
@@ -404,7 +404,7 @@ namespace Petshop.Core.ApplicationService.Impl
                 {
                     theType = _petTypeRepo.FindPetTypeById(thePet.PetType.PetTypeId);
                 }
-                if(theType.Count != 1)
+                if(theType.Count != 1 || theType == null)
                 {
                     throw new Exception("Could not find any PetType with these parameters.");
                 }

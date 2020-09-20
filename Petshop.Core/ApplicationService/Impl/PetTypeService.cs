@@ -94,7 +94,7 @@ namespace Petshop.Core.ApplicationService.Impl
                 case "id":
                     List<PetType> thePetTypes;
                     int theSearchId;
-                    if(int.TryParse(searchValue, out theSearchId) || theSearchId == 0)
+                    if(int.TryParse(searchValue, out theSearchId) || theSearchId != 0)
                     {
                         thePetTypes = new List<PetType> { FindPetTypeById(theSearchId) };
                         return thePetTypes;

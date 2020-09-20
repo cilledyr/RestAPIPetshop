@@ -129,7 +129,7 @@ namespace Petshop.Core.ApplicationService.Impl
                 case 5:
                     return _ownerRepo.UpdateEmailOfOwner(updatedOwner, updateValue);
                 default:
-                    throw new InvalidDataException(message: "Something unexpected went wrong.");
+                    throw new InvalidDataException(message: "I am sorry, i do not recognize what to update.");
             }
         }
 
